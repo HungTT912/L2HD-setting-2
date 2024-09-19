@@ -1,0 +1,12 @@
+results
+tuning_results
+wandb
+__pycache__
+runners/__pycache__
+tuning_results
+configs/tune_2
+configs/tune_3
+configs/tune_4
+configs/tune_5
+configs/tune_6
+configs/tune_7

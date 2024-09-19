@@ -1,0 +1,13 @@
+tmux :
+   window 1 : test tf8 tune_19 l=6.0, d = 0.05
+   window 2 : test tf8 tune_19 l=6.0, d=0.5
+   window 3 : test tf8 tune_19 l=6.0 d=0.1
+   window 4 : test tf8 tune_19 l=6.0 d=1.0
+   window 5 : 
+   window 6 : 
+   window 7 : train tf10 tune_19 l=6.0 d=0.25
+   window 8 : 
+   window 9 : 
+   window 10 : 
+
+   (tuning_result_tfbind8_lr0.05 - sampling_lr= 0.05 not 0.01)
