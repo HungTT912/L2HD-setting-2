@@ -91,7 +91,9 @@ def main():
     else:
         nconfig.training.device = [torch.device(f"cuda:{gpu_ids}")]
     
-    wandb.init(project='BBDM') 
+    wandb.init(project='BBDM',
+               name='test'+nconfig.wandb_name,
+               config = dconfig) 
     
     # df = pd.read_csv('./tuning_results/tune_11/result/tuning_result_dkitty_eta.csv')
     # df = df[df['mean (100th)']>=0.9595]
@@ -134,7 +136,7 @@ def main():
     
             for eta in [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.5, 1.0]:
                 for classifier_free_guidance_weight in [-4.0, -3.5, -3, -2.5, -2, -1.5]: 
-                    for alpha in [0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0, 1.05, 1.1, 1.15, 1.2, 1.5, 1.8]: 
+                    for alpha in [0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0, 1.05]: 
                         if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
                             continue 
                         print([lengthscale,delta, eta, alpha, classifier_free_guidance_weight])
