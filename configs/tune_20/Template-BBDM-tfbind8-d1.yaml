@@ -38,6 +38,7 @@ GP:
   delta_lengthscale: 1.0
   delta_variance: 1.0
   threshold_diff: 0.001
+  num_fit_samples: 10000
 
 model:
   model_name: "BrownianBridge" # part of result path
