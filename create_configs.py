@@ -89,16 +89,16 @@ config_template = {
 }
 
 # Hyperparameter lists
-lengthscales = [3.0, 4.0, 5.0, 6.0, 7.0]
-learning_rates = [0.005, 0.01, 0.05, 0.1]
-delta_lengthscale = 0.25
+lengthscale = 6.0
+learning_rates = [0.05]
+delta_lengthscales = [0.05, 0.1, 0.2, 0.5, 0.75, 1.0]
 
 # Function to create file names and adjust wandb_name
 def create_filename_and_wandb_name(lengthscale, lr):
     return f"./configs/tune_20/Template-BBDM-tfbind8-l{lengthscale}-lr{lr}-d{delta_lengthscale}", f"tf8-l{lengthscale}-lr{lr}-d{delta_lengthscale}"
 
 # Generate config files
-for lengthscale in lengthscales:
+for delta_lengthscale in delta_lengthscales:
     for lr in learning_rates:
         # Create filename and wandb_name
         filename, wandb_name = create_filename_and_wandb_name(lengthscale, lr)
