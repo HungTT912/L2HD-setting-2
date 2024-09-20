@@ -10,7 +10,7 @@ training:
   accumulate_grad_batches: 2
   batch_size: 64
   val_frac: 0.1
-  # classifier_free_guidance_prob: 0.15 
+  classifier_free_guidance_prob: 0.15 
 
 
 testing:

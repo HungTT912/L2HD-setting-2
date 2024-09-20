@@ -359,6 +359,7 @@ class BaseRunner(ABC):
             accumulate_grad_batches = self.config.training.accumulate_grad_batches 
             for epoch in range(start_epoch, self.config.training.n_epochs):
                 ### generate data from GP and create dataloader
+                start_time = time.time()
                 if self.config.task.name == 'TFBind8-Exact-v0': 
                     selected_fit_samples = torch.randperm(self.offline_x.shape[0])[:self.config.GP.num_fit_samples]
                     GP_Model = GP(device=self.config.training.device[0],
@@ -392,7 +393,7 @@ class BaseRunner(ABC):
                                                         batch_size=self.config.training.batch_size,
                                                         shuffle=True)
                 val_dataset = val_dataset + current_epoch_val_dataset
-                start_time = time.time()
+                
                 pbar = tqdm(train_loader, total=len(train_loader), smoothing=0.01, disable=False)
                 self.global_epoch = epoch
                 for train_batch in pbar:
