@@ -1,6 +1,8 @@
 results
 tuning_results
 wandb
+run.sh
+log_slurm
 __pycache__
 runners/__pycache__
 tuning_results

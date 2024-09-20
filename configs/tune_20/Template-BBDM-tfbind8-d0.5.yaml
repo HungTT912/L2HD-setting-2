@@ -1,6 +1,7 @@
 # Brownian Bridge Diffusion Model Template(Pixel Space)
 runner: "BBDMRunner"
 tune : "tune_20"
+wandb_name: "tf8-d0.5"
 training:
   n_epochs: 100
   save_interval: 20

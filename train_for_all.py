@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd 
 import csv
 import wandb 
+wandb.login(key="1cfab558732ccb32d573a7276a337d22b7d8b371")
 
 from utils import dict2namespace, get_runner, namespace2dict
 
@@ -84,7 +85,9 @@ def tester(config):
 
 def main():
     nconfig, dconfig = parse_args_and_config()
-    wandb.init(project='BBDM') 
+    wandb.init(project='BBDM',
+               name=nconfig.wandb_name,
+               config = dconfig) 
     args = nconfig.args
     gpu_ids = args.gpu_ids
     if gpu_ids == "-1": # Use CPU

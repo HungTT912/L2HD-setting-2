@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader
 
 from Register import Registers
 from model.BrownianBridge.BrownianBridgeModel import BrownianBridgeModel
-from model.BrownianBridge.LatentBrownianBridgeModel import LatentBrownianBridgeModel
+# from model.BrownianBridge.LatentBrownianBridgeModel import LatentBrownianBridgeModel
 from runners.DiffusionBasedModelRunners.DiffusionBaseRunner import DiffusionBaseRunner
 from runners.utils import weights_init, get_optimizer
 from tqdm.autonotebook import tqdm
