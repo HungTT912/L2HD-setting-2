@@ -349,22 +349,6 @@ class BaseRunner(ABC):
             noise = torch.tensor(self.config.GP.noise, device=self.config.training.device[0])
             mean_prior = torch.tensor(0.0, device = self.config.training.device[0]) 
             
-            if self.config.task.name == 'TFBind8-Exact-v0': 
-                GP_Model = GP(device=self.config.training.device[0],
-                            x_train=self.offline_x[:self.config.GP.num_fit_samples],
-                            y_train=self.offline_y[:self.config.GP.num_fit_samples], 
-                            lengthscale=lengthscale, 
-                            variance=variance, 
-                            noise=noise, 
-                            mean_prior=mean_prior)
-            else: 
-                GP_Model = GP(device=self.config.training.device[0],
-                            x_train=self.offline_x,
-                            y_train=self.offline_y, 
-                            lengthscale=lengthscale, 
-                            variance=variance, 
-                            noise=noise, 
-                            mean_prior=mean_prior)
             #GP_Model.set_hyper(lengthscale=lengthscale,variance=variance)
             best_indices = torch.argsort(self.offline_y)[-1024:]
             self.best_x = self.offline_x[best_indices]
@@ -375,6 +359,23 @@ class BaseRunner(ABC):
             accumulate_grad_batches = self.config.training.accumulate_grad_batches 
             for epoch in range(start_epoch, self.config.training.n_epochs):
                 ### generate data from GP and create dataloader
+                selected_fit_samples = torch.randperm(self.offline_x.shape[0])[:self.config.GP.num_fit_samples]
+                if self.config.task.name == 'TFBind8-Exact-v0': 
+                    GP_Model = GP(device=self.config.training.device[0],
+                                x_train=self.offline_x[selected_fit_samples],
+                                y_train=self.offline_y[selected_fit_samples], 
+                                lengthscale=lengthscale, 
+                                variance=variance, 
+                                noise=noise, 
+                                mean_prior=mean_prior)
+                else: 
+                    GP_Model = GP(device=self.config.training.device[0],
+                                x_train=self.offline_x,
+                                y_train=self.offline_y, 
+                                lengthscale=lengthscale, 
+                                variance=variance, 
+                                noise=noise, 
+                                mean_prior=mean_prior)
                 data_from_GP = sampling_data_from_GP(x_train=self.best_x,
                                                     device=self.config.training.device[0],
                                                     GP_Model=GP_Model,
