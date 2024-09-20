@@ -84,7 +84,7 @@ def tester(config):
 
 def main():
     nconfig, dconfig = parse_args_and_config()
-    # wandb.init(project='BBDM') 
+    wandb.init(project='BBDM') 
     args = nconfig.args
     gpu_ids = args.gpu_ids
     if gpu_ids == "-1": # Use CPU
@@ -101,7 +101,7 @@ def main():
         model_load_path_list.append(model_load_path) 
         optim_sche_load_path_list.append(optim_sche_load_path)
     nconfig.args.train = False 
-    # wandb.finish() 
+    wandb.finish() 
     
 if __name__ == "__main__":
     main()
