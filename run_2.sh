@@ -5,5 +5,7 @@
 #SBATCH --ntasks=1               # Number of tasks (processes)
 #SBATCH --gpus=1                 # Number of GPUs per node
 #SBATCH --cpus-per-task=10                              # Number of CPU cores per task
-#SBATCH --cpus-per-task=20
-sh ./test-bash-1.sh
+#SBATCH --cpus-per-task=20 
+sh ./test-bash-2.sh
+
+
