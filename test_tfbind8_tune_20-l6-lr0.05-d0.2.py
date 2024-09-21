@@ -113,7 +113,7 @@ def main():
     plot_time = 20 
     sampling_lr = 0.05
     for lengthscale in [6.0]:
-        for delta in [0.1]: 
+        for delta in [0.2]: 
 
             folder_path = './tuning_results/tune_20/result' 
             if not os.path.exists(folder_path): 
@@ -136,7 +136,7 @@ def main():
     
             for eta in [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.5, 1.0]:
                 for classifier_free_guidance_weight in [-4.0, -3.5, -3, -2.5, -2, -1.5]: 
-                    for alpha in [0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0, 1.05]: 
+                    for alpha in [0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0]: 
                         if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
                             continue 
                         print([lengthscale,delta, eta, alpha, classifier_free_guidance_weight])
