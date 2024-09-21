@@ -109,7 +109,7 @@ def main():
                                 dataset_kwargs={"max_samples": 10000})
     classifier_free_guidance_prob = 0.15 
     plot_time = 20 
-    sampling_lr = 0.05
+    sampling_lr = 0.001
     for lengthscale in [1.0]:
         for delta in [0.25]: 
 
