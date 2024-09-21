@@ -21,7 +21,7 @@ config_template = {
         "num_candidates": 128
     },
     "task": {
-        "name": 'DKittyMorphology-Exact-v0',
+        "name": 'TFBind10-Exact-v0',
         "normalize_y": True,
         "normalize_x": True
     },
@@ -79,7 +79,7 @@ config_template = {
                 "num_timesteps": 1000,
                 "max_var": 1.0,
                 "MLPParams": {
-                    "image_size": 56,
+                    "image_size": 30,
                     "hidden_size": 1024,
                     "condition_key": "SpatialRescaler"
                 }
@@ -91,11 +91,11 @@ config_template = {
 # Hyperparameter lists
 lengthscale = 6.0
 learning_rates = [0.05]
-delta_lengthscales = [0.25]
+delta_lengthscales = [0.25, 1.0]
 
 # Function to create file names and adjust wandb_name
 def create_filename_and_wandb_name(lengthscale, lr):
-    return f"./configs/tune_20/Template-BBDM-dkitty-l{lengthscale}-lr{lr}-d{delta_lengthscale}", f"dkitty-l{lengthscale}-lr{lr}-d{delta_lengthscale}"
+    return f"./configs/tune_20/Template-BBDM-tfbind10-l{lengthscale}-lr{lr}-d{delta_lengthscale}", f"tfbind10-l{lengthscale}-lr{lr}-d{delta_lengthscale}"
 
 # Generate config files
 for delta_lengthscale in delta_lengthscales:
