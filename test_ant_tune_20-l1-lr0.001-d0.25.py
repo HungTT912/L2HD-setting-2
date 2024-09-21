@@ -97,7 +97,7 @@ def main():
     
     best_tf8_hyper = pd.read_csv('./tuning_results/tune_20/result/tuning_result_tfbind8_lengthscale6.0_sampling_lr0.05_delta0.25.csv')
     best_tf8_hyper = best_tf8_hyper[best_tf8_hyper['mean (100th)']>0.9795]
-    best_tf8_hyper = best_tf8_hyper[best_tf8_hyper['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
+    best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
     seed_list = range(8)
     num_fit_samples = 10000
     
