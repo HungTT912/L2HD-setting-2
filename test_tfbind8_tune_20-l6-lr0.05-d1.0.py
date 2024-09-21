@@ -109,6 +109,8 @@ def main():
     else:
         task = design_bench.make(nconfig.task.name,
                                 dataset_kwargs={"max_samples": 10000})
+    if task.is_discrete: 
+        task.map_to_logits()
     classifier_free_guidance_prob = 0.15 
     
     sampling_lr = 0.05

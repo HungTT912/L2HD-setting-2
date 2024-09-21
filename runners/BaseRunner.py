@@ -87,8 +87,46 @@ class BaseRunner(ABC):
         if self.config.task.normalize_y:
             self.offline_y = (self.offline_y - self.mean_offline_y) / self.std_offline_y
         
+        if self.config.args.train == False and self.config.testing.type_sampling=='highest': 
+            best_indices = torch.argsort(self.offline_y)[-128:] 
+            self.offline_x = self.offline_x[best_indices] 
+            self.offline_y = self.offline_y[best_indices]
+        
         self.offline_x = self.offline_x.to(self.config.training.device[0])
         self.offline_y = self.offline_y.to(self.config.training.device[0])
+
+    def update_config(self, config):
+        self.net = None  # Neural Network
+        self.optimizer = None  # optimizer
+        self.scheduler = None  # scheduler
+        self.config = config  # config from configuration file
+        # set training params
+        self.global_epoch = 0  # global epoch
+        self.global_step = 0
+
+        self.GAN_buffer = {}  # GAN buffer for Generative Adversarial Network
+        self.topk_checkpoints = {}  # Top K checkpoints
+
+        # set log and save destination
+        self.config.result = argparse.Namespace()
+        # initialize model
+        self.net, self.optimizer, self.scheduler = self.initialize_model_optimizer_scheduler(self.config)
+
+
+        # initialize EMA
+        self.use_ema = False if not self.config.model.__contains__('EMA') else self.config.model.EMA.use_ema
+        if self.use_ema:
+            self.ema = EMA(self.config.model.EMA.ema_decay)
+            self.update_ema_interval = self.config.model.EMA.update_ema_interval
+            self.start_ema_step = self.config.model.EMA.start_ema_step
+            self.ema.register(self.net)
+
+        # load model from checkpoint
+        self.load_model_from_checkpoint()
+        # initialize DDP
+        self.net = self.net.to(self.config.training.device[0])
+        # self.ema.reset_device(self.net)
+
 
     def get_offline_data(self):
         if self.config.task.name != 'TFBind10-Exact-v0':
@@ -565,7 +603,7 @@ class BaseRunner(ABC):
         denormalize_high_candidates = high_candidates * self.std_offline_x + self.mean_offline_x
 
         if task.is_discrete: 
-            task.map_to_logits() 
+            # task.map_to_logits() 
             denormalize_high_candidates = denormalize_high_candidates.reshape(denormalize_high_candidates.shape[0],task.x.shape[1],task.x.shape[2])
         
         high_true_scores = task.predict(denormalize_high_candidates.numpy())

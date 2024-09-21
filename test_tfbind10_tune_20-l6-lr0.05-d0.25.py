@@ -78,9 +78,8 @@ def trainer(config):
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
     return runner.train()
-def tester(config, task):
+def tester(runner, config, task):
     set_random_seed(config.args.seed)
-    runner = get_runner(config.runner, config)
     return runner.test(task) 
 
 def main():
@@ -111,17 +110,19 @@ def main():
         task = design_bench.make(nconfig.task.name,
                                 dataset_kwargs={"max_samples": 10000})
     if task.is_discrete: 
-        task.map_to_logits()
+        task.map_to_logits() 
+
     classifier_free_guidance_prob = 0.15 
-    plot_time = 20 
+    plot_time = 5
     sampling_lr = 0.05
+    runner = get_runner(nconfig.runner, nconfig)
     for lengthscale in [6.0]:
         for delta in [0.25]: 
 
             folder_path = './tuning_results/tune_20/result' 
             if not os.path.exists(folder_path): 
                 os.makedirs(folder_path)
-            file_path = f'./tuning_results/tune_20/result/tuning_result_tfbind8_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
+            file_path = f'./tuning_results/tune_20/result/tuning_result_tfbind10_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
     
             if not os.path.isfile(file_path):
                 with open(file_path, 'a') as file:
@@ -142,14 +143,16 @@ def main():
                     for alpha in [0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0]: 
                         if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
                             continue 
+                        
                         print([lengthscale,delta, eta, alpha, classifier_free_guidance_weight])
                         results_100th = []
                         results_80th = []
                         results_50th = []
                         nconfig.model.BB.params.eta = eta 
                         for seed in seed_list:      
+                            starttime = time.time()
                             nconfig.training.classifier_free_guidance_prob = classifier_free_guidance_prob 
-                            cmd = f"grep -Rlw './results/tune_20/TFBind8-Exact-v0/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta{delta}/seed{seed}' -e 'train: true'"
+                            cmd = f"grep -Rlw './results/tune_20/TFBind10-Exact-v0/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta{delta}/seed{seed}' -e 'train: true'"
                             result_path = subprocess.check_output(cmd, shell=True, text=True)
                             result_path = result_path.strip()
                             #print(result_path)
@@ -167,11 +170,14 @@ def main():
                             nconfig.model.model_load_path = model_load_path
                             nconfig.model.optim_sche_load_path = optim_sche_load_path
                             nconfig.args.seed = seed
-                            result = tester(nconfig, task)
+                            runner.update_config(nconfig)
+                            result = tester(runner, nconfig, task)
                             print("Score : ",result[0]) 
                             results_100th.append(result[0])
                             results_80th.append(result[1]) 
                             results_50th.append(result[2]) 
+                            endtime = time.time() 
+                            print("Computing time : ", endtime-starttime)
                         
                         assert len(results_100th) == 8 
                         assert nconfig.GP.sampling_from_GP_lr == sampling_lr 
@@ -198,7 +204,7 @@ def main():
                                 df = pd.read_csv(file_path)
                                 table = wandb.Table(dataframe=df)
                                 wandb.log({"data_table": table})
-                                plot_time = 20 
+                                plot_time = 5
                             
 
     wandb.finish()
