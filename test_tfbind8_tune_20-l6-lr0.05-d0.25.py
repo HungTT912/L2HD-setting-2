@@ -110,7 +110,7 @@ def main():
         task = design_bench.make(nconfig.task.name,
                                 dataset_kwargs={"max_samples": 10000})
     classifier_free_guidance_prob = 0.15 
-    
+    plot_time = 20 
     sampling_lr = 0.05
     for lengthscale in [6.0]:
         for delta in [0.25]: 
@@ -190,9 +190,14 @@ def main():
                             new_row = [sampling_lr,lengthscale,delta, eta, alpha, classifier_free_guidance_weight, mean_score_100th, std_score_100th, mean_score_80th, std_score_80th, mean_score_50th, std_score_50th]
                             writer = csv.writer(file)
                             writer.writerow(new_row)
-                            df = pd.read_csv(file_path)
-                            table = wandb.Table(dataframe=df)
-                            wandb.log({"data_table": table})
+                            plot_time -= 1 
+                            if plot_time == 0 : 
+                                df = pd.read_csv(file_path)
+                                table = wandb.Table(dataframe=df)
+                                wandb.log({"data_table": table})
+                                plot_time = 20 
+                            
+
     wandb.finish()
 
 if __name__ == "__main__":
