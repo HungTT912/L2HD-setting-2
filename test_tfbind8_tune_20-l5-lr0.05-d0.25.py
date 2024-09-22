@@ -117,12 +117,6 @@ def main():
             if not os.path.exists(folder_path): 
                 os.makedirs(folder_path)
             file_path = f'./tuning_results/tune_20/result/tuning_result_tfbind8_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
-    
-            if not os.path.isfile(file_path):
-                with open(file_path, 'a') as file:
-                    header = ['sampling_lr','lengthscale','delta', 'eta','alpha','classifier_free_guidance_weight', 'mean (100th)', 'std (100th)', 'mean (80th)', 'std (80th)', 'mean (50th)', 'std (50th)']
-                    writer = csv.writer(file)
-                    writer.writerow(header)
 
             if not os.path.isfile(file_path):
                 with open(file_path, 'a') as file:

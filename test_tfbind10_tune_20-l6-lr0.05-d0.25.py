@@ -90,7 +90,7 @@ def main():
         nconfig.training.device = [torch.device("cpu")]
     else:
         nconfig.training.device = [torch.device(f"cuda:{gpu_ids}")]
-    
+    wandb.login(key='1cfab558732ccb32d573a7276a337d22b7d8b371')
     wandb.init(project='BBDM',
                name='test'+nconfig.wandb_name,
                config = dconfig) 
@@ -112,7 +112,7 @@ def main():
     if task.is_discrete: 
         task.map_to_logits() 
     best_tf8_hyper = pd.read_csv('./tuning_results/tune_20/result/tuning_result_tfbind8_lengthscale6.0_sampling_lr0.05_delta0.25.csv')
-    best_tf8_hyper = best_tf8_hyper[best_tf8_hyper['mean (100th)']>0.9795]
+    best_tf8_hyper = best_tf8_hyper[best_tf8_hyper['mean (100th)']>0.97]
     best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
     classifier_free_guidance_prob = 0.15 
     plot_time = 5
@@ -132,11 +132,6 @@ def main():
                     writer = csv.writer(file)
                     writer.writerow(header)
 
-            if not os.path.isfile(file_path):
-                with open(file_path, 'a') as file:
-                    header = ['sampling_lr','lengthscale','delta', 'eta','alpha','classifier_free_guidance_weight', 'mean (100th)', 'std (100th)', 'mean (80th)', 'std (80th)', 'mean (50th)', 'std (50th)']
-                    writer = csv.writer(file)
-                    writer.writerow(header)
             df = pd.read_csv(file_path) 
             tested_parameters = df[['lengthscale','delta','eta','alpha','classifier_free_guidance_weight']].values.tolist()
     
