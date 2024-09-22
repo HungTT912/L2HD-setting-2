@@ -9,7 +9,7 @@ https://arxiv.org/abs/2205.07680
 
 ## Requirements
 ```commandline
-cond env create -f environment.yml
+conda env create -f environment.yml
 conda activate BBDM
 
 # install pytorch
@@ -25,25 +25,34 @@ rm mujoco200_linux.zip
 wget https://www.roboti.us/file/mjkey.txt -O ~/.mujoco/mjkey.txt
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/.mujoco/mujoco200/bin
-
-pip install Cython==0.29.36 numpy==1.21.5 mujoco_py==2.0.2.3
+# follow https://github.com/openai/mujoco-py/issues/627
+conda install -c conda-forge glew
+conda install -c conda-forge mesalib
+conda install -c menpo glfw3
+export CPATH=$CONDA_PREFIX/include
+python3 -m pip install patchelf
+python3 -m pip install Cython==0.29.36 numpy==1.21.5 mujoco_py==2.0.2.3
 
 # Design-Bench Installation
-pip install design-bench==2.0.12
-pip install robel==0.1.2 morphing_agents==1.5.1 transforms3d --no-dependencies
-pip install botorch==0.6.4 gpytorch==1.6.0
-pip install gym==0.12.5
+python3 -m pip install design-bench==2.0.12
+python3 -m pip install robel==0.1.2 morphing_agents==1.5.1 transforms3d --no-dependencies
+python3 -m pip install botorch==0.6.4 gpytorch==1.6.0
+python3 -m pip install gym==0.12.5
 
 # Download Design-Bench Offline Datasets: 
-pip install gdown
-pip uninstall charset-normalizer
-pip install charset-normalizer
+python3 -m pip install gdown
+python3 -m pip uninstall charset-normalizer
+python3 -m pip install charset-normalizer
 gdown 'https://drive.google.com/uc?id=1_ITQSRrO4SV0EaW2FTfCYryrla2-IXdP'
 unzip design_bench_data.zip
 rm -rf design_bench_data.zip
-mv -v design_bench_data <CONDA_PATH>/envs/BBDM/lib/python3.9/site-packages
-pip install tensorflow==2.11.0
-pip install pandas==1.4.0
+mv -v design_bench_data $CONDA_PREFIX/lib/python3.9/site-packages
+python3 -m pip install tensorflow==2.11.0
+python3 -m pip install wandb
+# python3 -m pip uninstall numpy
+python3 -m pip install numpy==1.22.4
+python3 -m pip install omegaconf
+python3 -m pip install einops
 ```
 
 ## Data preparation

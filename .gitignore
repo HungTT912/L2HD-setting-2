@@ -4,6 +4,7 @@ wandb
 run.sh
 log_slurm
 __pycache__
+__MACOSX
 runners/__pycache__
 tuning_results
 configs/tune_2
