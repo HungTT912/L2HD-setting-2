@@ -111,7 +111,7 @@ def main():
                                 dataset_kwargs={"max_samples": 10000})
     if task.is_discrete: 
         task.map_to_logits() 
-    best_tf8_hyper = pd.read_csv('./tuning_results/tune_20/result/tuning_result_tfbind8_lengthscale6.0_sampling_lr0.05_delta1.0.csv')
+    best_tf8_hyper = pd.read_csv('./tuning_results/tune_20/result/tuning_result_tfbind8_lengthscale5.5_sampling_lr0.05_delta0.75.csv')
     best_tf8_hyper = best_tf8_hyper[best_tf8_hyper['mean (100th)']>0.97]
     best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
     classifier_free_guidance_prob = 0.15 

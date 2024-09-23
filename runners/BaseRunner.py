@@ -48,7 +48,7 @@ class BaseRunner(ABC):
         #                                                         with_time=True)
         if self.config.args.train:
             self.config.result.ckpt_path = make_save_dirs(self.config.args,
-                                                    prefix=self.config.tune+'/'+ self.config.task.name + f'/sampling_lr{self.config.GP.sampling_from_GP_lr}/initial_lengthscale{self.config.GP.initial_lengthscale}/delta{self.config.GP.delta_lengthscale}/seed{self.config.args.seed}',
+                                                    prefix=self.config.tune+'/'+ self.config.task.name + f'/fit_samples_frac{self.config.GP.num_fit_samples_frac}/sampling_lr{self.config.GP.sampling_from_GP_lr}/initial_lengthscale{self.config.GP.initial_lengthscale}/delta{self.config.GP.delta_lengthscale}/seed{self.config.args.seed}',
                                                     suffix=self.config.model.model_name,
                                                     with_time=False)
             # self.config.result.ckpt_path = make_save_dirs(self.config.args,
@@ -398,8 +398,8 @@ class BaseRunner(ABC):
             for epoch in range(start_epoch, self.config.training.n_epochs):
                 ### generate data from GP and create dataloader
                 start_time = time.time()
-                if self.config.task.name == 'TFBind8-Exact-v0': 
-                    selected_fit_samples = torch.randperm(self.offline_x.shape[0])[:self.config.GP.num_fit_samples]
+                if self.config.task.name == 'TFBind8-Exact-v0' or self.config.task.name == 'TFBind10-Exact-v0': 
+                    selected_fit_samples = torch.randperm(self.offline_x.shape[0])[:1/self.config.GP.num_fit_samples_frac*self.offline_x.shape[0]]
                     GP_Model = GP(device=self.config.training.device[0],
                                 x_train=self.offline_x[selected_fit_samples],
                                 y_train=self.offline_y[selected_fit_samples], 

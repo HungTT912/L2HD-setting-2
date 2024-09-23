@@ -109,22 +109,23 @@ def main():
     else:
         task = design_bench.make(nconfig.task.name,
                                 dataset_kwargs={"max_samples": 10000})
+    frac= nconfig.GP.num_fit_samples_frac
     if task.is_discrete: 
         task.map_to_logits() 
-    best_tf8_hyper = pd.read_csv('./tuning_results/tune_20/result/tuning_result_tfbind8_lengthscale5.5_sampling_lr0.05_delta0.5.csv')
+    best_tf8_hyper = pd.read_csv('./tuning_results/tune_20/result/tuning_result_tfbind8_lengthscale6.0_sampling_lr0.05_delta0.25.csv')
     best_tf8_hyper = best_tf8_hyper[best_tf8_hyper['mean (100th)']>0.97]
     best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
     classifier_free_guidance_prob = 0.15 
     plot_time = 5
     sampling_lr = 0.05
     runner = get_runner(nconfig.runner, nconfig)
-    for lengthscale in [5.5]:
-        for delta in [0.5]: 
+    for lengthscale in [6.0]:
+        for delta in [0.25]: 
 
-            folder_path = './tuning_results/tune_20/result' 
+            folder_path = './tuning_results/tune_21/result' 
             if not os.path.exists(folder_path): 
                 os.makedirs(folder_path)
-            file_path = f'./tuning_results/tune_20/result/tuning_result_tfbind10_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
+            file_path = f'./tuning_results/tune_21/result/tuning_result_tfbind10_frac_{frac}_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
     
             if not os.path.isfile(file_path):
                 with open(file_path, 'a') as file:
@@ -147,7 +148,7 @@ def main():
                 for seed in seed_list:      
                     starttime = time.time()
                     nconfig.training.classifier_free_guidance_prob = classifier_free_guidance_prob 
-                    cmd = f"grep -Rlw './results/tune_20/TFBind10-Exact-v0/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta{delta}/seed{seed}' -e 'train: true'"
+                    cmd = f"grep -Rlw './results/tune_21/TFBind10-Exact-v0/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta{delta}/seed{seed}' -e 'train: true'"
                     result_path = subprocess.check_output(cmd, shell=True, text=True)
                     result_path = result_path.strip()
                     #print(result_path)
