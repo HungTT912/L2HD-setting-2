@@ -100,7 +100,7 @@ def main():
     # print(len(df))
     # hyper_parameter_list= df[['eta','alpha','classifier_free_guidance_weight']].to_numpy()
 
-    seed_list = range(1)
+    seed_list = range(8)
     num_fit_samples = 10000
     
     
@@ -174,7 +174,7 @@ def main():
                     endtime = time.time() 
                     print("Computing time : ", endtime-starttime)
                 
-                # assert len(results_100th) == 8 
+                assert len(results_100th) == 8 
                 assert nconfig.GP.sampling_from_GP_lr == sampling_lr 
                 assert nconfig.GP.delta_lengthscale == delta 
                 assert nconfig.GP.initial_lengthscale == lengthscale 

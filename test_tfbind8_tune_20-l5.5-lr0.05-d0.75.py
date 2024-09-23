@@ -116,7 +116,7 @@ def main():
     sampling_lr = 0.05
     plot_time = 20 
     for lengthscale in [5.5]:
-        for delta in [0.5]: 
+        for delta in [0.75]: 
 
             folder_path = './tuning_results/tune_20/result' 
             if not os.path.exists(folder_path): 
