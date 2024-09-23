@@ -79,7 +79,7 @@ config_template = {
                 "num_timesteps": 1000,
                 "max_var": 1.0,
                 "MLPParams": {
-                    "image_size": 30,
+                    "image_size": 24,
                     "hidden_size": 1024,
                     "condition_key": "SpatialRescaler"
                 }
