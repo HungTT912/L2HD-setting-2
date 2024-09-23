@@ -1,6 +1,6 @@
 GP:
-  delta_lengthscale: 0.5
-  delta_variance: 0.5
+  delta_lengthscale: 1.0
+  delta_variance: 1.0
   initial_lengthscale: 5.5
   initial_outputscale: 5.5
   noise: 0.01
@@ -52,7 +52,7 @@ model:
   only_load_latent_mean_std: false
 runner: BBDMRunner
 task:
-  name: TFBind8-Exact-v0
+  name: TFBind10-Exact-v0
   normalize_x: true
   normalize_y: true
 testing:
@@ -69,4 +69,4 @@ training:
   val_frac: 0.01
   validation_interval: 20
 tune: tune_20
-wandb_name: tfbind8-l5.5-lr0.05-d0.5
+wandb_name: tfbind10-l5.5-lr0.05-d1.0

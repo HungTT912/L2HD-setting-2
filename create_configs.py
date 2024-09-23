@@ -11,7 +11,7 @@ config_template = {
         "validation_interval": 20,
         "accumulate_grad_batches": 2,
         "batch_size": 64,
-        "val_frac": 0.1,
+        "val_frac": 0.01,
         "classifier_free_guidance_prob": 0.15
     },
     "testing": {
@@ -21,7 +21,7 @@ config_template = {
         "num_candidates": 128
     },
     "task": {
-        "name": 'TFBind10-Exact-v0',
+        "name": 'TFBind8-Exact-v0',
         "normalize_y": True,
         "normalize_x": True
     },
@@ -89,13 +89,14 @@ config_template = {
 }
 
 # Hyperparameter lists
-lengthscale = 6.0
+lengthscale = 5.5
 learning_rates = [0.05]
-delta_lengthscales = [0.25, 1.0]
+delta_lengthscales = [0.5, 0.75, 1.0]
+task = 'tfbind8'
 
 # Function to create file names and adjust wandb_name
 def create_filename_and_wandb_name(lengthscale, lr):
-    return f"./configs/tune_20/Template-BBDM-tfbind10-l{lengthscale}-lr{lr}-d{delta_lengthscale}", f"tfbind10-l{lengthscale}-lr{lr}-d{delta_lengthscale}"
+    return f"./configs/tune_20/Template-BBDM-{task}-l{lengthscale}-lr{lr}-d{delta_lengthscale}", f"{task}-l{lengthscale}-lr{lr}-d{delta_lengthscale}"
 
 # Generate config files
 for delta_lengthscale in delta_lengthscales:

@@ -527,7 +527,7 @@ class BaseRunner(ABC):
                             model_ckpt_name = f'top_model_epoch_{epoch + 1}.pth'
                             optim_sche_ckpt_name = f'top_optim_sche_epoch_{epoch + 1}.pth'
 
-                            if self.config.args.save_top:
+                            if self.config.args.save_top and (epoch + 1) == self.config.training.n_epochs :
                                 print("save top model start...")
                                 # wandb.log('save top model start...')
                                 top_key = 'top'
