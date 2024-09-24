@@ -92,7 +92,7 @@ config_template = {
 lengthscale = 5.0
 learning_rates = [0.05]
 delta_lengthscales = [0.25]
-num_fit_samples_list = [1000, 2500, 5000, 7500, 10000, 15000, 20000]
+num_fit_samples_list = [8500, 9000, 9500]
 task = 'tfbind8'
 
 # Function to create file names and adjust wandb_name
