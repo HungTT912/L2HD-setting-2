@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --job-name=cuongdm        # Job name
+#SBATCH --job-name=cuongdm2        # Job name
 #SBATCH --output=log_slurm/result_cuongdm_2.txt      # Output file
 #SBATCH --error=log_slurm/error_cuongdm_2.txt        # Error file
 #SBATCH --ntasks=1               # Number of tasks (processes)
 #SBATCH --gpus=1                 # Number of GPUs per node
-#SBATCH --cpus-per-task=40                              # Number of CPU cores per task
-sh ./train-bash.sh
+#SBATCH --cpus-per-task=30                              # Number of CPU cores per task
+sh ./train-bash-2.sh
 
 
