@@ -95,6 +95,8 @@ def main():
     else:
         nconfig.training.device = [torch.device(f"cuda:{gpu_ids}")]
     seed_list = range(8)
+    if nconfig.wandb_name == "tune_21-tf8-l5.0-lr0.05-d0.25-n4":
+        seed_list = [7]
     model_load_path_list = [] 
     optim_sche_load_path_list = []
     for seed in seed_list:
