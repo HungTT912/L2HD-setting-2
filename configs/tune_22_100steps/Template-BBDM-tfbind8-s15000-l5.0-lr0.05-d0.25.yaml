@@ -4,9 +4,9 @@ GP:
   initial_lengthscale: 5.0
   initial_outputscale: 5.0
   noise: 0.01
-  num_fit_samples: 8500
+  num_fit_samples: 15000
   num_functions: 8
-  num_gradient_steps: 50
+  num_gradient_steps: 100
   num_points: 1024
   sampling_from_GP_lr: 0.05
   threshold_diff: 0.001
@@ -69,4 +69,4 @@ training:
   val_frac: 0.1
   validation_interval: 20
 tune: tune_22_100steps
-wandb_name: tune_22-tfbind8-s8500-l5.0-lr0.05-d0.25
+wandb_name: tune_22_100steps-tfbind8-s15000-l5.0-lr0.05-d0.25

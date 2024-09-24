@@ -3,7 +3,7 @@ import yaml
 # Template config
 config_template = {
     "runner": "BBDMRunner",
-    "tune": "tune_22",
+    "tune": "tune_22_100steps",
     "wandb_name": "",
     "training": {
         "n_epochs": 100,
@@ -30,7 +30,7 @@ config_template = {
         "initial_outputscale": 0.0,  # Will be the same as lengthscale
         "noise": 1.e-2,
         "num_functions": 8,
-        "num_gradient_steps": 50,
+        "num_gradient_steps": 100,
         "num_points": 1024,
         "sampling_from_GP_lr": 0.0,
         "delta_lengthscale": 0.25,
@@ -92,12 +92,12 @@ config_template = {
 lengthscale = 5.0
 learning_rates = [0.05]
 delta_lengthscales = [0.25]
-num_fit_samples_list = [8500, 9000, 9500]
+num_fit_samples_list = [2500, 5000, 7500, 8500, 9000, 9500, 10000, 15000]
 task = 'tfbind8'
 
 # Function to create file names and adjust wandb_name
 def create_filename_and_wandb_name(lengthscale, lr, num_fit_samples):
-    return f"./configs/tune_22/Template-BBDM-{task}-s{num_fit_samples}-l{lengthscale}-lr{lr}-d{delta_lengthscale}", f"tune_22-{task}-s{num_fit_samples}-l{lengthscale}-lr{lr}-d{delta_lengthscale}"
+    return f"./configs/tune_22_100steps/Template-BBDM-{task}-s{num_fit_samples}-l{lengthscale}-lr{lr}-d{delta_lengthscale}", f"tune_22_100steps-{task}-s{num_fit_samples}-l{lengthscale}-lr{lr}-d{delta_lengthscale}"
 
 # Generate config files
 for num_fit_samples in num_fit_samples_list: 
