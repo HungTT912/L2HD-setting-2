@@ -118,10 +118,10 @@ def main():
     for lengthscale in [5.0]:
         for delta in [0.25]: 
 
-            folder_path = './tuning_results/tune_21/result' 
+            folder_path = './tuning_results/tune_22/result' 
             if not os.path.exists(folder_path): 
                 os.makedirs(folder_path)
-            file_path = f'./tuning_results/tune_21/result/tuning_result_tfbind8_frac_{frac}_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
+            file_path = f'./tuning_results/tune_22/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples}_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
 
             if not os.path.isfile(file_path):
                 with open(file_path, 'a') as file:
@@ -143,7 +143,7 @@ def main():
                         nconfig.model.BB.params.eta = eta 
                         for seed in seed_list:      
                             nconfig.training.classifier_free_guidance_prob = classifier_free_guidance_prob 
-                            cmd = f"grep -Rlw './results/tune_22/TFBind8-Exact-v0/num_fit_samples{num_fit_samples}//sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta{delta}/seed{seed}' -e 'train: true'"
+                            cmd = f"grep -Rlw './results/tune_22/TFBind8-Exact-v0/num_fit_samples{num_fit_samples}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta{delta}/seed{seed}' -e 'train: true'"
                             result_path = subprocess.check_output(cmd, shell=True, text=True)
                             result_path = result_path.strip()
                             #print(result_path)
