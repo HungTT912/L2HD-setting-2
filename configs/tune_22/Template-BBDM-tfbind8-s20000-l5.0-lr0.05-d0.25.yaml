@@ -69,4 +69,4 @@ training:
   val_frac: 0.1
   validation_interval: 20
 tune: tune_22
-wandb_name: tune_22-tfbind8-l5.0-lr0.05-d0.25
+wandb_name: tune_22-tfbind8-s20000-l5.0-lr0.05-d0.25

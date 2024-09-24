@@ -97,7 +97,7 @@ task = 'tfbind8'
 
 # Function to create file names and adjust wandb_name
 def create_filename_and_wandb_name(lengthscale, lr, num_fit_samples):
-    return f"./configs/tune_22/Template-BBDM-{task}-s{num_fit_samples}-l{lengthscale}-lr{lr}-d{delta_lengthscale}", f"tune_22-{task}-l{lengthscale}-lr{lr}-d{delta_lengthscale}"
+    return f"./configs/tune_22/Template-BBDM-{task}-s{num_fit_samples}-l{lengthscale}-lr{lr}-d{delta_lengthscale}", f"tune_22-{task}-s{num_fit_samples}-l{lengthscale}-lr{lr}-d{delta_lengthscale}"
 
 # Generate config files
 for num_fit_samples in num_fit_samples_list: 
