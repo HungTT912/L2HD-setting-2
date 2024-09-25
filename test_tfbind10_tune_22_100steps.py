@@ -82,10 +82,10 @@ def get_offline_data(nconfig):
     mean_y = np.mean(offline_y, axis=0)
     std_y = np.std(offline_y, axis=0)
     
-    shuffle_idx = np.random.permutation(offline_x.shape[0])
+    # shuffle_idx = np.random.permutation(offline_x.shape[0])
 
-    offline_x = offline_x[shuffle_idx]
-    offline_y = offline_y[shuffle_idx]
+    # offline_x = offline_x[shuffle_idx]
+    # offline_y = offline_y[shuffle_idx]
     offline_y = offline_y.reshape(-1)
     
     return torch.from_numpy(offline_x), torch.from_numpy(mean_x), torch.from_numpy(std_x), torch.from_numpy(offline_y), torch.from_numpy(mean_y), torch.from_numpy(std_y)
@@ -110,6 +110,11 @@ def tester(config, task):
     global offline_x, mean_x, std_x , offline_y, mean_y , std_y
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
+    
+    shuffle_idx = np.random.permutation(offline_x.shape[0])
+    offline_x = offline_x[shuffle_idx]
+    offline_y = offline_y[shuffle_idx]
+    
     runner.offline_x, runner.mean_offline_x, runner.std_offline_x = offline_x, mean_x, std_x 
     runner.offline_y, runner.mean_offline_y, runner.std_offline_y = offline_y, mean_y, std_y 
     
