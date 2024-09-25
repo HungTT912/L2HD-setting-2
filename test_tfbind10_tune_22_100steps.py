@@ -77,9 +77,9 @@ def trainer(config):
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
     return runner.train()
-def tester(runner, config, task):
+def tester(config, task):
     set_random_seed(config.args.seed)
-    runner.update_config(config)
+    runner = get_runner(config.runner, config)
     return runner.test(task) 
 
 def main():
@@ -115,7 +115,7 @@ def main():
     classifier_free_guidance_prob = 0.15 
     num_fit_samples = nconfig.GP.num_fit_samples
     sampling_lr = 0.05
-    runner = get_runner(nconfig.runner, nconfig)
+
     for lengthscale in [5.0]:
         for delta in [0.25]: 
 
@@ -167,7 +167,8 @@ def main():
                     nconfig.model.model_load_path = model_load_path
                     nconfig.model.optim_sche_load_path = optim_sche_load_path
                     nconfig.args.seed = seed
-                    result = tester(runner, nconfig, task)
+                    
+                    result = tester(nconfig, task)
                     print("Score : ",result[0]) 
                     results_100th.append(result[0])
                     results_80th.append(result[1]) 
