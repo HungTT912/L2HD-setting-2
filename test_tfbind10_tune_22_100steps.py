@@ -145,6 +145,7 @@ def main():
                                 dataset_kwargs={"max_samples": 10000})
     if task.is_discrete: 
         task.map_to_logits()
+    global offline_x, mean_x, std_x, offline_y, mean_y, std_y 
     offline_x, mean_x, std_x , offline_y, mean_y , std_y = get_offline_data(nconfig)
     offline_x = (offline_x - mean_x) / std_x
     offline_y = (offline_y - mean_y) / std_y   
