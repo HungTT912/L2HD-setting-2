@@ -73,14 +73,48 @@ def CPU_singleGPU_launcher(config):
             runner.test()
     return
 
+def get_offline_data(task, nconfig):
+        offline_x = task.x
+        if task.is_discrete:
+            offline_x = task.to_logits(offline_x).reshape(offline_x.shape[0], -1)
+
+        mean_x = np.mean(offline_x, axis=0)
+        std_x = np.std(offline_x, axis=0)
+        std_x = np.where(std_x == 0, 1.0, std_x)
+        
+        offline_y = task.y
+        mean_y = np.mean(offline_y, axis=0)
+        std_y = np.std(offline_y, axis=0)
+        
+        shuffle_idx = np.random.permutation(offline_x.shape[0])
+
+        offline_x = offline_x[shuffle_idx]
+        offline_y = offline_y[shuffle_idx]
+        offline_y = offline_y.reshape(-1)
+        
+        offline_x = torch.from_numpy(offline_x)
+        mean_x = torch.from_numpy(mean_x)
+        std_x = torch.from_numpy(std_x)
+        
+        offline_y = torch.from_numpy(offline_y)
+        mean_y = torch.from_numpy(mean_y)
+        std_y = torch.from_numpy(std_y)
+        
+        normalized_offline_x = (offline_x - mean_x) / std_x
+        noramlized_offline_y = (offline_y - mean_y) / std_y
+        offline_x = offline_x.to(nconfig.training.device[0])
+        offline_y = offline_y.to(nconfig.training.device[0])
+        
+        return normalized_offline_x, noramlized_offline_y
+
 def trainer(config): 
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
     return runner.train()
-def tester(config, task):
+def tester(config, task,normalized_offline_x , normalized_offline_y ):
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
-    return runner.test(task) 
+    return runner.test(task,normalized_offline_x, normalized_offline_y) 
 
 def main():
     nconfig, dconfig = parse_args_and_config()
@@ -93,8 +127,8 @@ def main():
     
     wandb.login(key='1cfab558732ccb32d573a7276a337d22b7d8b371')
     wandb.init(project='BBDM',
-               name='test'+nconfig.wandb_name,
-               config = dconfig) 
+            name='test'+nconfig.wandb_name,
+            config = dconfig) 
     
     # df = pd.read_csv('./tuning_results/tune_11/result/tuning_result_dkitty_eta.csv')
     # df = df[df['mean (100th)']>=0.9595]
@@ -110,6 +144,7 @@ def main():
     else:
         task = design_bench.make(nconfig.task.name,
                                 dataset_kwargs={"max_samples": 10000})
+    normalized_offline_x, normalized_offline_y = get_offline_data(task,nconfig) 
     if task.is_discrete: 
         task.map_to_logits()
     classifier_free_guidance_prob = 0.15 
@@ -168,7 +203,7 @@ def main():
                     nconfig.model.optim_sche_load_path = optim_sche_load_path
                     nconfig.args.seed = seed
                     
-                    result = tester(nconfig, task)
+                    result = tester(nconfig, task, normalized_offline_x , normalized_offline_y )
                     print("Score : ",result[0]) 
                     results_100th.append(result[0])
                     results_80th.append(result[1]) 
