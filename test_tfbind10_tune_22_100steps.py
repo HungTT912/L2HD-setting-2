@@ -141,7 +141,7 @@ def main():
     # print(len(df))
     # hyper_parameter_list= df[['eta','alpha','classifier_free_guidance_weight']].to_numpy()
 
-    seed_list = range(8)
+    seed_list = range(1)
     # num_fit_samples = 10000
     
     
@@ -166,7 +166,7 @@ def main():
         offline_y = offline_y[shuffle_idx]
         offline_x = offline_x.to(nconfig.training.device[0])
         offline_y = offline_y.to(nconfig.training.device[0])
-        sorted_indices = torch.argsort(offline_y)[128:] 
+        sorted_indices = torch.argsort(offline_y)[-128:] 
         offline_x = offline_x[sorted_indices] 
         offline_y = offline_y[sorted_indices] 
         
