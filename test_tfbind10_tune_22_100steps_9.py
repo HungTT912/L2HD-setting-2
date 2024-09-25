@@ -153,18 +153,18 @@ def main():
     if task.is_discrete: 
         task.map_to_logits()
     
-    num_fit_samples_list = [8000, 13000,14000, 14500,15000, 15500, 16000, 17000] 
+    best_tf8_hyper =  pd.read_csv(f'./tuning_results/tune_22_100steps/result/tuning_result_tfbind8_num_fit_samples8000_lengthscale5.0_sampling_lr0.05_delta0.25.csv')
+    num_fit_samples_list = [ 13000,14000, 14500,15000, 15500, 16000, 17000] 
     for num_fit_samples_tf8 in num_fit_samples_list : 
         best_tf8_hyper1 = pd.read_csv(f'./tuning_results/tune_22_100steps/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples_tf8}_lengthscale5.0_sampling_lr0.05_delta0.25.csv')
-        best_tf8_hyper1 = best_tf8_hyper1[best_tf8_hyper1['mean (100th)']>0.9795]
+        best_tf8_hyper1 = best_tf8_hyper1[best_tf8_hyper1['mean (100th)']>0.97]
         best_tf8_hyper = pd.concat([best_tf8_hyper, best_tf8_hyper1])
     
-    best_tf8_hyper = best_tf8_hyper[best_tf8_hyper['mean (100th)']>0.97]
     best_tf8_hyper = best_tf8_hyper.sort_values(by= 'mean (100th)',ascending= False)
     best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
     best_tf8_hyper = np.unique(best_tf8_hyper, axis =0)
     num_candidates = best_tf8_hyper.shape[0] 
-    best_tf8_hyper = best_tf8_hyper[:int(1/5*num_candidates)]
+    best_tf8_hyper = best_tf8_hyper[int(9/10*num_candidates):]
         
     global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
     offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list = [],[],[],[],[],[] 
