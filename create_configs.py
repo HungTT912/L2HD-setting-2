@@ -21,7 +21,7 @@ config_template = {
         "num_candidates": 128
     },
     "task": {
-        "name": 'TFBind8-Exact-v0',
+        "name": 'TFBind10-Exact-v0',
         "normalize_y": True,
         "normalize_x": True
     },
@@ -79,7 +79,7 @@ config_template = {
                 "num_timesteps": 1000,
                 "max_var": 1.0,
                 "MLPParams": {
-                    "image_size": 24,
+                    "image_size": 30,
                     "hidden_size": 1024,
                     "condition_key": "SpatialRescaler"
                 }
@@ -92,8 +92,8 @@ config_template = {
 lengthscale = 5.0
 learning_rates = [0.05]
 delta_lengthscales = [0.25]
-num_fit_samples_list = [2500, 5000, 7500, 8500, 9000, 9500, 10000, 15000]
-task = 'tfbind8'
+num_fit_samples_list = [10000]
+task = 'tfbind10'
 
 # Function to create file names and adjust wandb_name
 def create_filename_and_wandb_name(lengthscale, lr, num_fit_samples):
