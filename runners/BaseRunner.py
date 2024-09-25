@@ -81,7 +81,7 @@ class BaseRunner(ABC):
         
         # get offline data from design-bench
         
-        if self.config.args.train == True or self.config.args.seed == 0: 
+        if self.config.args.train == True: 
             self.offline_x, self.mean_offline_x, self.std_offline_x, self.offline_y, self.mean_offline_y, self.std_offline_y = self.get_offline_data()
             
             if self.config.task.normalize_x:

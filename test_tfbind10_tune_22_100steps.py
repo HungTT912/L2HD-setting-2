@@ -63,6 +63,33 @@ def set_random_seed(SEED=1234):
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
 
+def get_offline_data(nconfig):
+    if nconfig.task.name != 'TFBind10-Exact-v0':
+        task = design_bench.make(nconfig.task.name)
+    else:
+        task = design_bench.make(nconfig.task.name,
+                                dataset_kwargs={"max_samples": 10000})
+
+    offline_x = task.x
+    if task.is_discrete:
+        offline_x = task.to_logits(offline_x).reshape(offline_x.shape[0], -1)
+
+    mean_x = np.mean(offline_x, axis=0)
+    std_x = np.std(offline_x, axis=0)
+    std_x = np.where(std_x == 0, 1.0, std_x)
+    
+    offline_y = task.y
+    mean_y = np.mean(offline_y, axis=0)
+    std_y = np.std(offline_y, axis=0)
+    
+    shuffle_idx = np.random.permutation(offline_x.shape[0])
+
+    offline_x = offline_x[shuffle_idx]
+    offline_y = offline_y[shuffle_idx]
+    offline_y = offline_y.reshape(-1)
+    
+    return torch.from_numpy(offline_x), torch.from_numpy(mean_x), torch.from_numpy(std_x), torch.from_numpy(offline_y), torch.from_numpy(mean_y), torch.from_numpy(std_y)
+
 
 def CPU_singleGPU_launcher(config):
     set_random_seed(config.args.seed)
@@ -80,8 +107,12 @@ def trainer(config):
     runner = get_runner(config.runner, config)
     return runner.train()
 def tester(config, task):
+    global offline_x, mean_x, std_x , offline_y, mean_y , std_y
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
+    runner.offline_x, runner.mean_offline_x, runner.std_offline_x = offline_x, mean_x, std_x 
+    runner.offline_y, runner.mean_offline_y, runner.std_offline_y = offline_y, mean_y, std_y 
+    
     return runner.test(task) 
 
 def main():
@@ -114,6 +145,12 @@ def main():
                                 dataset_kwargs={"max_samples": 10000})
     if task.is_discrete: 
         task.map_to_logits()
+    offline_x, mean_x, std_x , offline_y, mean_y , std_y = get_offline_data(nconfig)
+    offline_x = (offline_x - mean_x) / std_x
+    offline_y = (offline_y - mean_y) / std_y   
+    offline_x = offline_x.to(nconfig.training.device[0])
+    offline_y = offline_y.to(nconfig.training.device[0])
+
     classifier_free_guidance_prob = 0.15 
     num_fit_samples = nconfig.GP.num_fit_samples
     sampling_lr = 0.05
