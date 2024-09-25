@@ -398,7 +398,7 @@ class BaseRunner(ABC):
             for epoch in range(start_epoch, self.config.training.n_epochs):
                 ### generate data from GP and create dataloader
                 start_time = time.time()
-                if self.config.task.name == 'TFBind8-Exact-v0' or self.config.task.name == 'TFBind10-Exact-v0': 
+                if self.config.task.name == 'TFBind8-Exact-v0': 
                     selected_fit_samples = torch.randperm(self.offline_x.shape[0])[:self.config.GP.num_fit_samples]
                     GP_Model = GP(device=self.config.training.device[0],
                                 x_train=self.offline_x[selected_fit_samples],
