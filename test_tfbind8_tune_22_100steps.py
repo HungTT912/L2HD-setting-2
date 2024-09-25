@@ -77,7 +77,7 @@ def trainer(config):
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
     return runner.train()
-def tester(runner, config, task):
+def tester(config, task):
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
     return runner.test(task) 
