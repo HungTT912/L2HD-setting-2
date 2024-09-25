@@ -133,9 +133,11 @@ def main():
 
             best_tf8_hyper1 = pd.read_csv(f'./tuning_results/tune_22_100steps/result/tuning_result_tfbind8_num_fit_samples15000_lengthscale5.0_sampling_lr0.05_delta0.25.csv')
             best_tf8_hyper2 = pd.read_csv(f'./tuning_results/tune_22_100steps/result/tuning_result_tfbind8_num_fit_samples8000_lengthscale5.0_sampling_lr0.05_delta0.25.csv')
-            best_tf8_hyper = best_tf8_hyper2.append(best_tf8_hyper1, ignore_index=True)
+            best_tf8_hyper = pd.concat([best_tf8_hyper1,best_tf8_hyper2],ignore_index=True)
+            
             best_tf8_hyper = best_tf8_hyper[best_tf8_hyper['mean (100th)']>0.9794]
             best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
+            
             for eta, alpha, classifier_free_guidance_weight in best_tf8_hyper: 
                 if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
                     continue 
