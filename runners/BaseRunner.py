@@ -391,6 +391,15 @@ class BaseRunner(ABC):
             best_indices = torch.argsort(self.offline_y)[-1024:]
             self.best_x = self.offline_x[best_indices]
             
+            # if self.config.GP.type_of_initial_points == 'highest':
+            #     best_indices = torch.argsort(self.offline_y)[-1024:]
+            #     self.best_x = self.offline_x[best_indices]
+            # elif self.config.GP.type_of_initial_points == 'lowest': 
+            #     best_indices = torch.argsort(self.offline_y)[:1024]
+            #     self.best_x = self.offline_x[best_indices]
+            # else : 
+            #     self.best_x = self.offline_x 
+            
             val_loader = None
             val_dataset = []
             
@@ -415,6 +424,8 @@ class BaseRunner(ABC):
                                 variance=variance, 
                                 noise=noise, 
                                 mean_prior=mean_prior)
+                # if self.config.training.no_GP == True : 
+                #     data_from_GP = sampling_from_offline_data
                 data_from_GP = sampling_data_from_GP(x_train=self.best_x,
                                                     device=self.config.training.device[0],
                                                     GP_Model=GP_Model,

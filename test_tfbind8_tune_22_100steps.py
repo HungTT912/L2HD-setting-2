@@ -77,9 +77,9 @@ def trainer(config):
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
     return runner.train()
-def tester(config, task):
+def tester(runner, config, task):
     set_random_seed(config.args.seed)
-    runner = get_runner(config.runner, config)
+    runner.update_config(config)
     return runner.test(task) 
 
 def main():
@@ -161,7 +161,8 @@ def main():
                             nconfig.model.model_load_path = model_load_path
                             nconfig.model.optim_sche_load_path = optim_sche_load_path
                             nconfig.args.seed = seed
-                            result = tester(nconfig, task)
+                            runner = get_runner(nconfig.runner, nconfig)
+                            result = tester(runner, nconfig, task)
                             print("Score : ",result[0]) 
                             results_100th.append(result[0])
                             results_80th.append(result[1]) 
