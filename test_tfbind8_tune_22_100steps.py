@@ -114,6 +114,7 @@ def main():
         task.map_to_logits()
     classifier_free_guidance_prob = 0.15 
     num_fit_samples = nconfig.GP.num_fit_samples
+    runner = get_runner(nconfig.runner, nconfig)
     sampling_lr = 0.05
     for lengthscale in [5.0]:
         for delta in [0.25]: 
@@ -161,7 +162,6 @@ def main():
                             nconfig.model.model_load_path = model_load_path
                             nconfig.model.optim_sche_load_path = optim_sche_load_path
                             nconfig.args.seed = seed
-                            runner = get_runner(nconfig.runner, nconfig)
                             result = tester(runner, nconfig, task)
                             print("Score : ",result[0]) 
                             results_100th.append(result[0])
