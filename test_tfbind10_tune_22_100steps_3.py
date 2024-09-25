@@ -156,7 +156,7 @@ def main():
     num_fit_samples_list = [8000, 13000,14000, 14500,15000, 15500, 16000, 17000] 
     for num_fit_samples_tf8 in num_fit_samples_list : 
         best_tf8_hyper1 = pd.read_csv(f'./tuning_results/tune_22_100steps/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples_tf8}_lengthscale5.0_sampling_lr0.05_delta0.25.csv')
-        best_tf8_hyper1 = best_tf8_hyper1[best_tf8_hyper1['mean (100th)']>0.9795]
+        best_tf8_hyper1 = best_tf8_hyper1[best_tf8_hyper1['mean (100th)']>0.97]
         best_tf8_hyper = pd.concat([best_tf8_hyper, best_tf8_hyper1])
     
     best_tf8_hyper = best_tf8_hyper[best_tf8_hyper['mean (100th)']>0.97]
