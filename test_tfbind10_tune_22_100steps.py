@@ -142,8 +142,8 @@ def main():
             best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
             
             for eta, alpha, classifier_free_guidance_weight in best_tf8_hyper: 
-                if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
-                    continue 
+                # if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
+                #     continue 
                 print([lengthscale,delta, eta, alpha, classifier_free_guidance_weight])
                 results_100th = []
                 results_80th = []
