@@ -81,7 +81,7 @@ class BaseRunner(ABC):
         
         # get offline data from design-bench
         
-        if self.config.args.train == True or self.task.name != 'TFBind10-Exact-v0' : 
+        if self.config.args.train == True or self.args.seed == 0: 
             self.offline_x, self.mean_offline_x, self.std_offline_x, self.offline_y, self.mean_offline_y, self.std_offline_y = self.get_offline_data()
             
             if self.config.task.normalize_x:
@@ -89,13 +89,8 @@ class BaseRunner(ABC):
             if self.config.task.normalize_y:
                 self.offline_y = (self.offline_y - self.mean_offline_y) / self.std_offline_y
         
-        if self.config.args.train == False and self.config.testing.type_sampling=='highest': 
-            best_indices = torch.argsort(self.offline_y)[-128:] 
-            self.offline_x = self.offline_x[best_indices] 
-            self.offline_y = self.offline_y[best_indices]
-        
-        self.offline_x = self.offline_x.to(self.config.training.device[0])
-        self.offline_y = self.offline_y.to(self.config.training.device[0])
+            self.offline_x = self.offline_x.to(self.config.training.device[0])
+            self.offline_y = self.offline_y.to(self.config.training.device[0])
 
     def update_config(self, config):
         self.net = None  # Neural Network
@@ -587,22 +582,14 @@ class BaseRunner(ABC):
             print('traceback.format_exc():\n%s' % traceback.format_exc())
 
     @torch.no_grad()
-    def test(self, task, normalized_offline_x = None, normalized_offline_y = None):
+    def test(self, task):
         
-        if normalized_offline_x == None : 
-            low_candidates, low_scores = sampling_from_offline_data(x=self.offline_x, 
-                                                                    y=self.offline_y, 
-                                                                    n_candidates=self.config.testing.num_candidates, 
-                                                                    type=self.config.testing.type_sampling,
-                                                                    percentile_sampling=self.config.testing.percentile_sampling,
-                                                                    seed=self.config.args.seed)
-        else: 
-            low_candidates, low_scores = sampling_from_offline_data(x=normalized_offline_x,
-                                                                    y=normalized_offline_y,
-                                                                    n_candidates=self.config.testing.num_candidates, 
-                                                                    type=self.config.testing.type_sampling,
-                                                                    percentile_sampling=self.config.testing.percentile_sampling,
-                                                                    seed=self.config.args.seed)
+        low_candidates, low_scores = sampling_from_offline_data(x=self.offline_x,
+                                                                y=self.offline_y,
+                                                                n_candidates=self.config.testing.num_candidates, 
+                                                                type=self.config.testing.type_sampling,
+                                                                percentile_sampling=self.config.testing.percentile_sampling,
+                                                                seed=self.config.args.seed)
         if self.use_ema:
             self.apply_ema()
         self.net.eval()
