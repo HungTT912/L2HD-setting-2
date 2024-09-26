@@ -1,5 +1,4 @@
 results
-tuning_results
 wandb
 run.sh
 log_slurm
@@ -8,7 +7,6 @@ __MACOSX
 .ipynb_checkpoints
 design_bench_data.zip
 runners/__pycache__
-tuning_results
 configs/tune_2
 configs/tune_3
 configs/tune_4

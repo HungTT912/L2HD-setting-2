@@ -37,7 +37,6 @@ python3 -m pip install Cython==0.29.36 numpy==1.21.5 mujoco_py==2.0.2.3
 # cd envs/lib then ln -s libOSMesa32.so libOSMesa.so
 # solve libGL the same as in the above link
 
-
 # Design-Bench Installation
 python3 -m pip install design-bench==2.0.12
 python3 -m pip install robel==0.1.2 morphing_agents==1.5.1 transforms3d --no-dependencies
@@ -58,7 +57,7 @@ python3 -m pip install wandb
 python3 -m pip install numpy==1.22.4
 python3 -m pip install omegaconf
 python3 -m pip install einops
-export PYTHONPATH=/home/user01/miniconda3/envs/BBDM/lib/python3.9/site-packages/:/cm/shared/apps/jupyter/15.3.0/lib64/python3.9/site-packages/:/cm/shared/apps/jupyter/15.3.0/lib/python3.9/site-packages/
+export PYTHONPATH=/home/user03/miniconda3/envs/BBDM/lib/python3.9/site-packages/:/cm/shared/apps/jupyter/15.3.0/lib64/python3.9/site-packages/:/cm/shared/apps/jupyter/15.3.0/lib/python3.9/site-packages/
 
 ```
 

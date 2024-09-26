@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=cuongdm2        # Job name
+#SBATCH --job-name=bbdm       # Job name
 #SBATCH --output=log_slurm/result_cuongdm_2.txt      # Output file
 #SBATCH --error=log_slurm/error_cuongdm_2.txt        # Error file
 #SBATCH --ntasks=1               # Number of tasks (processes)
