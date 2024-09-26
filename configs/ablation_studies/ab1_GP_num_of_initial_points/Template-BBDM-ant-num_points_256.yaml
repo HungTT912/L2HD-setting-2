@@ -69,5 +69,5 @@ training:
   save_interval: 20
   val_frac: 0.1
   validation_interval: 20
-tune: ablation_studies/ab1
+tune: ablation_studies/ab1/num_points_256
 wandb_name: abs1-ant-num_points_256

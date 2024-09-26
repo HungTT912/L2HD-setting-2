@@ -69,5 +69,5 @@ training:
   save_interval: 20
   val_frac: 0.1
   validation_interval: 20
-tune: ablation_studies/ab3
+tune: ablation_studies/ab3/grads_100
 wandb_name: ab3-ant-grads_100
