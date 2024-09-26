@@ -153,16 +153,10 @@ def main():
     if task.is_discrete: 
         task.map_to_logits()
     
-    best_tf8_hyper =  pd.read_csv(f'./tuning_results/tune_22_100steps/result/tuning_result_tfbind8_num_fit_samples8000_lengthscale5.0_sampling_lr0.05_delta0.25.csv')
-    num_fit_samples_list = [ 13000,14000, 14500,15000, 15500, 16000, 17000] 
-    for num_fit_samples_tf8 in num_fit_samples_list : 
-        best_tf8_hyper1 = pd.read_csv(f'./tuning_results/tune_22_100steps/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples_tf8}_lengthscale5.0_sampling_lr0.05_delta0.25.csv')
-        best_tf8_hyper1 = best_tf8_hyper1[best_tf8_hyper1['mean (100th)']>0.97]
-        best_tf8_hyper = pd.concat([best_tf8_hyper, best_tf8_hyper1])
-    
+    best_tf8_hyper =  pd.read_csv(f'tuning_results/tune_20/result/tuning_result_tfbind8_lengthscale6.0_sampling_lr0.05_delta0.25.csv')
+    best_tf8_hyper = best_tf8_hyper[best_tf8_hyper['mean (100th)']>0.97]
     best_tf8_hyper = best_tf8_hyper.sort_values(by= 'mean (100th)',ascending= False)
     best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
-    best_tf8_hyper = np.unique(best_tf8_hyper, axis =0)
     num_candidates = best_tf8_hyper.shape[0] 
     best_tf8_hyper = best_tf8_hyper[int(9/10*num_candidates):]
         
@@ -196,7 +190,7 @@ def main():
     num_fit_samples = nconfig.GP.num_fit_samples
     sampling_lr = 0.05
 
-    for lengthscale in [5.0]:
+    for lengthscale in [6.0]:
         for delta in [0.25]: 
 
             folder_path = './tuning_results/tune_22_100steps/result' 
@@ -222,7 +216,7 @@ def main():
                 nconfig.model.BB.params.eta = eta 
                 for seed in seed_list:      
                     nconfig.training.classifier_free_guidance_prob = classifier_free_guidance_prob 
-                    cmd = f"grep -Rlw './results/tune_22_100steps/TFBind10-Exact-v0/num_fit_samples{num_fit_samples}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta{delta}/seed{seed}' -e 'train: true'"
+                    cmd = f"grep -Rlw './results/tune_20/TFBind10-Exact-v0/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta{delta}/seed{seed}' -e 'train: true'"
                     result_path = subprocess.check_output(cmd, shell=True, text=True)
                     result_path = result_path.strip()
                     #print(result_path)

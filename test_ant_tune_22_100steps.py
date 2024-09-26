@@ -206,6 +206,7 @@ def main():
             tested_parameters = df[['lengthscale','delta','eta','alpha','classifier_free_guidance_weight']].values.tolist()
                 
             for eta, alpha, classifier_free_guidance_weight in best_tf10_hyper: 
+                classifier_free_guidance_weight = -1.5
                 if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
                     continue 
                 print([lengthscale,delta, eta, alpha, classifier_free_guidance_weight])
