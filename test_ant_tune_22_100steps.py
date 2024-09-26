@@ -215,7 +215,7 @@ def main():
                 nconfig.model.BB.params.eta = eta 
                 for seed in seed_list:      
                     nconfig.training.classifier_free_guidance_prob = classifier_free_guidance_prob 
-                    cmd = f"grep -Rlw './results/tune_20/AntMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25' -e 'train: true'"
+                    cmd = f"grep -Rlw './results/tune_20/AntMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25/seed{seed}' -e 'train: true'"
                     result_path = subprocess.check_output(cmd, shell=True, text=True)
                     result_path = result_path.strip()
                     #print(result_path)
