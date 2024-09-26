@@ -48,7 +48,7 @@ class BaseRunner(ABC):
         #                                                         with_time=True)
         if self.config.args.train:
             self.config.result.ckpt_path = make_save_dirs(self.config.args,
-                                                    prefix=self.config.tune+'/'+ self.config.task.name + f'/num_fit_samples{self.config.GP.num_fit_samples}/sampling_lr{self.config.GP.sampling_from_GP_lr}/initial_lengthscale{self.config.GP.initial_lengthscale}/delta{self.config.GP.delta_lengthscale}/seed{self.config.args.seed}',
+                                                    prefix=self.config.tune+'/'+ self.config.task.name + f'/sampling_lr{self.config.GP.sampling_from_GP_lr}/initial_lengthscale{self.config.GP.initial_lengthscale}/delta{self.config.GP.delta_lengthscale}/seed{self.config.args.seed}',
                                                     suffix=self.config.model.model_name,
                                                     with_time=False)
             # self.config.result.ckpt_path = make_save_dirs(self.config.args,
@@ -91,39 +91,6 @@ class BaseRunner(ABC):
         
             self.offline_x = self.offline_x.to(self.config.training.device[0])
             self.offline_y = self.offline_y.to(self.config.training.device[0])
-
-    def update_config(self, config):
-        self.net = None  # Neural Network
-        self.optimizer = None  # optimizer
-        self.scheduler = None  # scheduler
-        self.config = config  # config from configuration file
-        # set training params
-        self.global_epoch = 0  # global epoch
-        self.global_step = 0
-
-        self.GAN_buffer = {}  # GAN buffer for Generative Adversarial Network
-        self.topk_checkpoints = {}  # Top K checkpoints
-
-        # set log and save destination
-        self.config.result = argparse.Namespace()
-        # initialize model
-        self.net, self.optimizer, self.scheduler = self.initialize_model_optimizer_scheduler(self.config)
-
-
-        # initialize EMA
-        self.use_ema = False if not self.config.model.__contains__('EMA') else self.config.model.EMA.use_ema
-        if self.use_ema:
-            self.ema = EMA(self.config.model.EMA.ema_decay)
-            self.update_ema_interval = self.config.model.EMA.update_ema_interval
-            self.start_ema_step = self.config.model.EMA.start_ema_step
-            self.ema.register(self.net)
-
-        # load model from checkpoint
-        self.load_model_from_checkpoint()
-        # initialize DDP
-        self.net = self.net.to(self.config.training.device[0])
-        # self.ema.reset_device(self.net)
-
 
     def get_offline_data(self):
         if self.config.task.name != 'TFBind10-Exact-v0':
