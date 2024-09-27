@@ -23,23 +23,23 @@ config_template = {
         "num_candidates": 128
     },
     "task": {
-        "name": 'AntMorphology-Exact-v0',
+        "name": 'TFBind8-Exact-v0',
         "normalize_y": True,
         "normalize_x": True
     },
     "GP": {
-        "initial_lengthscale": 1.0,
-        "initial_outputscale": 1.0,  # Will be the same as lengthscale
+        "initial_lengthscale": 5.0,
+        "initial_outputscale": 5.0,  # Will be the same as lengthscale
         "noise": 1.e-2,
         "num_functions": 8,
         # "num_gradient_steps": 100,
         "num_points": 1024,
-        "sampling_from_GP_lr": 0.001,
+        "sampling_from_GP_lr": 0.05,
         "delta_lengthscale": 0.25,
         "delta_variance": 0.25,
         "threshold_diff": 0.001,
-        "type_of_inital_points": 'highest'
-        # "num_fit_samples": 0
+        "type_of_inital_points": 'highest',
+        "num_fit_samples": 15500
     },
     "model": {
         "model_name": "BrownianBridge",
@@ -82,7 +82,7 @@ config_template = {
                 "num_timesteps": 1000,
                 "max_var": 1.0,
                 "MLPParams": {
-                    "image_size": 60,
+                    "image_size": 24,
                     "hidden_size": 1024,
                     "condition_key": "SpatialRescaler"
                 }
@@ -91,7 +91,7 @@ config_template = {
     }
 }
 
-task = 'ant'
+task = 'tfbind8'
 grad_list = [25,50,75,100]
 # Function to create file names and adjust wandb_name
 def create_filename_and_wandb_name(grads):
@@ -105,6 +105,7 @@ for grads in grad_list:
     config = config_template.copy()
     config["wandb_name"] = wandb_name
     config['GP']['num_gradient_steps'] = grads
+    config['tune'] += '/grads_{grads}'
     # Save to a YAML file
     with open(f"{filename}.yaml", "w") as f:
         yaml.dump(config, f)
