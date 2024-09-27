@@ -235,7 +235,7 @@ def sampling_data_from_trajectories(x_train, y_train,high_scores, low_scores, bi
         selected_low_points = torch.randint(0,int(y_train.shape[0]/2),size=(num_functions*num_points,))
         selected_high_points = torch.randint(int(y_train.shape[0]/2),y_train.shape[0]-1,size=(num_functions*num_points,))
         datasets['f0']=[]
-        for i in range(num_points): 
+        for i in range(num_points*num_functions): 
             if y_train[selected_high_points[i]]-y_train[selected_low_points[i]] <= threshold_diff: 
                 continue 
             sample = [(x_train[selected_high_points[i]],y_train[selected_high_points[i]]),(x_train[selected_low_points[i]],y_train[selected_low_points[i]])]
