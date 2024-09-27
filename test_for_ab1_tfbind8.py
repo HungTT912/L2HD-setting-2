@@ -79,10 +79,10 @@ def trainer(config):
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
     return runner.train()
-def tester(config):
+def tester(config,task):
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
-    return runner.test() 
+    return runner.test(task) 
 
 def main():
     nconfig, dconfig = parse_args_and_config()
