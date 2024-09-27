@@ -10,7 +10,7 @@ GP:
   num_points: 1024
   sampling_from_GP_lr: 0.05
   threshold_diff: 0.001
-  type_of_inital_points: highest
+  type_of_initial_points: highest
 model:
   BB:
     lr_scheduler:

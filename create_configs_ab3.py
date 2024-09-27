@@ -38,7 +38,7 @@ config_template = {
         "delta_lengthscale": 0.25,
         "delta_variance": 0.25,
         "threshold_diff": 0.001,
-        "type_of_inital_points": 'highest',
+        "type_of_initial_points": 'highest',
         "num_fit_samples": 15500
     },
     "model": {
