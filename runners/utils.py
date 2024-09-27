@@ -226,8 +226,8 @@ def construct_bins_with_scores(x_train, y_train,device, num_functions= 8,num_poi
 def sampling_data_from_trajectories(x_train, y_train,high_scores, low_scores, bins, device, num_functions= 8,num_points = 1024, threshold_diff = 0.1, last_bins=True, two_big_bins = False):
     datasets = {}
     if last_bins == True : 
-        selected_high_bins = torch.full((num_points,),len(bins)-1)  # the last bins
-        selected_low_bins = torch.full((num_points,),0) # the first bins (smallest objective) 
+        selected_high_bins = torch.full((num_points,),0)  # the last bins
+        selected_low_bins = torch.full((num_points,),len(bins)-1) # the first bins (smallest objective) 
     elif two_big_bins == True : 
         sorted_indices = torch.argsort(y_train) 
         x_train = x_train[sorted_indices]
