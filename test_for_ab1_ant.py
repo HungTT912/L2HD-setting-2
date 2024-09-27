@@ -139,6 +139,7 @@ def main():
         np_result_50th = np.array(results_50th)
         mean_score_50th = np_result_50th.mean() 
         std_score_50th = np_result_50th.std()
+        print(nconfig.task.name)
         print(f'numpoints : {num_points}')
         print(mean_score_100th, std_score_100th)
         print(mean_score_80th, std_score_80th)
