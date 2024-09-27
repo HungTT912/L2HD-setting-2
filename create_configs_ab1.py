@@ -22,7 +22,7 @@ config_template = {
         "num_candidates": 128
     },
     "task": {
-        "name": 'AntMorphology-Exact-v0',
+        "name": 'TFBind8-Exact-v0',
         "normalize_y": True,
         "normalize_x": True
     },
@@ -90,7 +90,7 @@ config_template = {
     }
 }
 
-task = 'ant'
+task = 'tfbind8'
 num_points_list = [128, 256, 512, 1024]
 
 # Function to create file names and adjust wandb_name
@@ -105,6 +105,7 @@ for num_points in num_points_list:
     config = config_template.copy()
     config["wandb_name"] = wandb_name
     config['GP']['num_points'] = num_points
+    config['tune'] += '/num_points{num_points}'
     # Save to a YAML file
     with open(f"{filename}.yaml", "w") as f:
         yaml.dump(config, f)
