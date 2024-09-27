@@ -105,7 +105,7 @@ for grads in grad_list:
     config = config_template.copy()
     config["wandb_name"] = wandb_name
     config['GP']['num_gradient_steps'] = grads
-    config['tune'] += '/grads_{grads}'
+    config['tune'] += f'/grads_{grads}'
     # Save to a YAML file
     with open(f"{filename}.yaml", "w") as f:
         yaml.dump(config, f)

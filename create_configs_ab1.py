@@ -105,7 +105,7 @@ for num_points in num_points_list:
     config = config_template.copy()
     config["wandb_name"] = wandb_name
     config['GP']['num_points'] = num_points
-    config['tune'] += '/num_points{num_points}'
+    config['tune'] += f'/num_points{num_points}'
     # Save to a YAML file
     with open(f"{filename}.yaml", "w") as f:
         yaml.dump(config, f)

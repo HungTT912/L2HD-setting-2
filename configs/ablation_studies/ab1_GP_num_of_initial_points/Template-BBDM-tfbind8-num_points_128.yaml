@@ -70,5 +70,5 @@ training:
   save_interval: 20
   val_frac: 0.1
   validation_interval: 20
-tune: ablation_studies/ab1/num_points{num_points}
+tune: ablation_studies/ab1/num_points128
 wandb_name: abs1-tfbind8-num_points_128
