@@ -404,7 +404,9 @@ class BaseRunner(ABC):
                                                                 device = self.config.training.device[0], 
                                                                 num_functions=self.config.GP.num_functions, 
                                                                 num_points=self.config.GP.num_points,
-                                                                threshold_diff = self.config.GP.threshold_diff)
+                                                                threshold_diff = self.config.GP.threshold_diff,
+                                                                last_bins=self.config.GP.last_bins,
+                                                                two_big_bins=self.config.GP.two_big_bins)
                 else : 
                     data_from_GP = sampling_data_from_GP(x_train=self.best_x,
                                                         device=self.config.training.device[0],
