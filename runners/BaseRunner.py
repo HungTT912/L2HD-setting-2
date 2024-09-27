@@ -14,7 +14,7 @@ from abc import ABC, abstractmethod
 from tqdm.autonotebook import tqdm
 
 from runners.base.EMA import EMA
-from runners.utils import make_save_dirs, remove_file, sampling_data_from_GP, sampling_data_from_trajectories, create_train_dataloader, create_val_dataloader, sampling_from_offline_data, testing_by_oracle
+from runners.utils import make_save_dirs, remove_file, construct_bins_with_scores,sampling_data_from_GP, sampling_data_from_trajectories, create_train_dataloader, create_val_dataloader, sampling_from_offline_data, testing_by_oracle
 import numpy as np
 
 import gpytorch 
@@ -366,6 +366,13 @@ class BaseRunner(ABC):
             
             val_loader = None
             val_dataset = []
+            if self.config.training.no_GP == True : 
+                self.bins, self.high_scores, self.low_scores = construct_bins_with_scores(x_train=self.offline_x,
+                                                                                        y_train=self.offline_y,
+                                                                                        device = self.config.training.device[0], 
+                                                                                        num_functions=self.config.GP.num_functions, 
+                                                                                        num_points=self.config.GP.num_points,
+                                                                                        threshold_diff = self.config.GP.threshold_diff)
             
             accumulate_grad_batches = self.config.training.accumulate_grad_batches 
             for epoch in range(start_epoch, self.config.training.n_epochs):
@@ -389,7 +396,15 @@ class BaseRunner(ABC):
                                 noise=noise, 
                                 mean_prior=mean_prior)
                 if self.config.training.no_GP == True : 
-                    data_from_GP = sampling_data_from_trajectories(x_train=self.offline_x, y_train=self.offline_y,device = self.config.training.device[0], num_functions=self.config.GP.num_functions, num_points=self.config.GP.num_points)
+                    data_from_GP = sampling_data_from_trajectories(x_train=self.offline_x,
+                                                                y_train=self.offline_y,
+                                                                high_scores=self.high_scores,
+                                                                low_scores=self.low_scores,
+                                                                bins=self.bins,
+                                                                device = self.config.training.device[0], 
+                                                                num_functions=self.config.GP.num_functions, 
+                                                                num_points=self.config.GP.num_points,
+                                                                threshold_diff = self.config.GP.threshold_diff)
                 else : 
                     data_from_GP = sampling_data_from_GP(x_train=self.best_x,
                                                         device=self.config.training.device[0],

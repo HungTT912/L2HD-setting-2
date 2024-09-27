@@ -162,9 +162,7 @@ def create_val_dataloader(val_dataset, batch_size=32, shuffle=False):
 
     return valid_dataloader
 
-def sampling_data_from_trajectories(x_train, y_train,device, num_functions= 8,num_points = 1024, threshold_diff = 0.1):
-    datasets = {} 
-
+def construct_bins_with_scores(x_train, y_train,device, num_functions= 8,num_points = 1024, threshold_diff = 0.1):
     N, D = x_train.shape[0], x_train.shape[1] 
     points = x_train
     values = y_train  
@@ -217,17 +215,18 @@ def sampling_data_from_trajectories(x_train, y_train,device, num_functions= 8,nu
     for b in range(len(bins)):
         high_scores[b] = (nis[b] / (nis[b] + K)) * high_exps[b]
         low_scores[b] =  (nis[b] / (nis[b] + K)) * low_exps[b]
-
+    
     high_scores = torch.tensor(high_scores)
     high_scores = high_scores / torch.sum(high_scores)
     
     low_scores = torch.tensor(low_scores)
     low_scores = low_scores / torch.sum(low_scores)
+    return bins, high_scores, low_scores 
 
-    
+def sampling_data_from_trajectories(x_train, y_train,high_scores, low_scores, bins, device, num_functions= 8,num_points = 1024, threshold_diff = 0.1):
     selected_high_bins = torch.multinomial(high_scores,num_points,replacement=True) 
     selected_low_bins = torch.multinomial(low_scores,num_points,replacement=True) 
-    
+    datasets = {}
     for iter in range(num_functions):
         datasets[f'f{iter}']=[]
         for i in range(num_points):
