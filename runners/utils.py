@@ -223,10 +223,29 @@ def construct_bins_with_scores(x_train, y_train,device, num_functions= 8,num_poi
     low_scores = low_scores / torch.sum(low_scores)
     return bins, high_scores, low_scores 
 
-def sampling_data_from_trajectories(x_train, y_train,high_scores, low_scores, bins, device, num_functions= 8,num_points = 1024, threshold_diff = 0.1):
-    selected_high_bins = torch.multinomial(high_scores,num_points,replacement=True) 
-    selected_low_bins = torch.multinomial(low_scores,num_points,replacement=True) 
+def sampling_data_from_trajectories(x_train, y_train,high_scores, low_scores, bins, device, num_functions= 8,num_points = 1024, threshold_diff = 0.1, last_bins=True, two_big_bins = False):
     datasets = {}
+    if last_bins == True : 
+        selected_high_bins = torch.full((num_points,),len(bins)-1)  # the last bins
+        selected_low_bins = torch.full((num_points,),0) # the first bins (smallest objective) 
+    elif two_big_bins == True : 
+        sorted_indices = torch.argsort(y_train) 
+        x_train = x_train[sorted_indices]
+        y_train = y_train[sorted_indices]
+        selected_low_points = torch.randint(0,int(y_train.shape[0]/2),size=(num_functions*num_points,))
+        selected_high_points = torch.randint(int(y_train.shape[0]/2),y_train.shape[0]-1,size=(num_functions*num_points,))
+        datasets['f0']=[]
+        for i in range(num_points): 
+            if y_train[selected_high_points[i]]-y_train[selected_low_points[i]] <= threshold_diff: 
+                continue 
+            sample = [(x_train[selected_high_points[i]],y_train[selected_high_points[i]]),(x_train[selected_low_points[i]],y_train[selected_low_points[i]])]
+            datasets['f0'].append(sample)
+        return datasets
+    else: 
+        selected_high_bins = torch.multinomial(high_scores,num_points,replacement=True) 
+        selected_low_bins = torch.multinomial(low_scores,num_points,replacement=True) 
+        
+    
     for iter in range(num_functions):
         datasets[f'f{iter}']=[]
         for i in range(num_points):
