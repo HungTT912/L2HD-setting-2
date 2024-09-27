@@ -203,7 +203,7 @@ def main():
             alpha = 0.8
         
         
-            for classifier_free_guidance_weight in [-1.5, -4.0] :
+            for classifier_free_guidance_weight in [-1.5, -4.0, -3.5, -2.5, -2, -1.6, -1.4, -1.3, -1.7] :
                 for eta in [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.5, 1.0]:   
                     if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
                         continue 

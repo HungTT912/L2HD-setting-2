@@ -69,5 +69,5 @@ training:
   save_interval: 20
   val_frac: 0.1
   validation_interval: 20
-tune: ablation_studies/ab2
+tune: ablation_studies/ab2/lowest
 wandb_name: ab2-ant-type_points_lowest

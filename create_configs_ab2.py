@@ -104,6 +104,7 @@ for type_points in type_points_list:
     config = config_template.copy()
     config["wandb_name"] = wandb_name
     config['GP']['type_of_initial_points'] = type_points
+    config['tune'] += f'/{type_points}'
     # Save to a YAML file
     with open(f"{filename}.yaml", "w") as f:
         yaml.dump(config, f)
