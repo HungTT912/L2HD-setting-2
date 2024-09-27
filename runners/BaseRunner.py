@@ -14,7 +14,7 @@ from abc import ABC, abstractmethod
 from tqdm.autonotebook import tqdm
 
 from runners.base.EMA import EMA
-from runners.utils import make_save_dirs, remove_file, sampling_data_from_GP, create_train_dataloader, create_val_dataloader, sampling_from_offline_data, testing_by_oracle
+from runners.utils import make_save_dirs, remove_file, sampling_data_from_GP, sampling_data_from_trajectories, create_train_dataloader, create_val_dataloader, sampling_from_offline_data, testing_by_oracle
 import numpy as np
 
 import gpytorch 
@@ -388,19 +388,20 @@ class BaseRunner(ABC):
                                 variance=variance, 
                                 noise=noise, 
                                 mean_prior=mean_prior)
-                # if self.config.training.no_GP == True : 
-                #     data_from_GP = sampling_from_offline_data
-                data_from_GP = sampling_data_from_GP(x_train=self.best_x,
-                                                    device=self.config.training.device[0],
-                                                    GP_Model=GP_Model,
-                                                    num_functions=self.config.GP.num_functions,
-                                                    num_gradient_steps=self.config.GP.num_gradient_steps,
-                                                    num_points=self.config.GP.num_points,
-                                                    learning_rate=self.config.GP.sampling_from_GP_lr,
-                                                    delta_lengthscale=self.config.GP.delta_lengthscale,
-                                                    delta_variance=self.config.GP.delta_variance,
-                                                    seed=epoch,
-                                                    threshold_diff=self.config.GP.threshold_diff)
+                if self.config.training.no_GP == True : 
+                    data_from_GP = sampling_data_from_trajectories(x_train=self.offline_x, y_train=self.offline_y,device = self.config.training.device[0], num_functions=self.config.GP.num_functions, num_points=self.config.GP.num_points)
+                else : 
+                    data_from_GP = sampling_data_from_GP(x_train=self.best_x,
+                                                        device=self.config.training.device[0],
+                                                        GP_Model=GP_Model,
+                                                        num_functions=self.config.GP.num_functions,
+                                                        num_gradient_steps=self.config.GP.num_gradient_steps,
+                                                        num_points=self.config.GP.num_points,
+                                                        learning_rate=self.config.GP.sampling_from_GP_lr,
+                                                        delta_lengthscale=self.config.GP.delta_lengthscale,
+                                                        delta_variance=self.config.GP.delta_variance,
+                                                        seed=epoch,
+                                                        threshold_diff=self.config.GP.threshold_diff)
                 train_loader, current_epoch_val_dataset = create_train_dataloader(data_from_GP=data_from_GP,
                                                         val_frac=self.config.training.val_frac,
                                                         batch_size=self.config.training.batch_size,

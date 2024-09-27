@@ -162,6 +162,84 @@ def create_val_dataloader(val_dataset, batch_size=32, shuffle=False):
 
     return valid_dataloader
 
+def sampling_data_from_trajectories(x_train, y_train,device, num_functions= 8,num_points = 1024, threshold_diff = 0.1):
+    datasets = {} 
+
+    N, D = x_train.shape[0], x_train.shape[1] 
+    points = x_train
+    values = y_train  
+    optima = torch.max(values)
+    minima = torch.min(values)
+    # optima = 1.0
+    print("optima in the dataset: ", optima)
+
+    regrets = optima - values
+
+    num_bins = 64
+    traj_len = 128
+    num_trajectories = num_points * num_functions 
+
+    min_reg = torch.min(regrets)
+    max_reg = torch.max(regrets)
+
+    bin_len = (max_reg - min_reg) / num_bins
+    print(min_reg, max_reg, bin_len)
+
+    bins = [[] for i in range(num_bins)]
+
+    for i in range(len(y_train)):
+        # find the bin
+        for b in range(num_bins):
+            # reg = optima - data_y[i]
+            if regrets[i] >= min_reg + b * bin_len and regrets[i] <= min_reg + (b + 1) * bin_len:
+                bins[b].append(i)
+                break
+
+    nis = [len(i) for i in bins]
+    high_exps = [-1 for i in bins]
+    low_exps = [-1 for i in bins] 
+    high_scores = [-1 for i in bins]
+    low_scores = [-1 for i in bins]
+    
+    # print("90th percentile: ", np.percentile(regrets, 90))
+
+    tau = optima - torch.quantile(regrets, 0.9).to(device)
+    K = 0.03 * N 
+    print("tau: ", tau, " K: ", K)
+
+    for b in range(len(bins)):
+        low = optima - (min_reg + b * bin_len)
+        high = optima - (min_reg + (b + 1) * bin_len)
+        avg = (low + high) / 2
+        high_exps[b] = torch.exp((avg - optima) / tau)
+        low_exps[b] = torch.exp((avg - minima) /tau)
+
+    for b in range(len(bins)):
+        high_scores[b] = (nis[b] / (nis[b] + K)) * high_exps[b]
+        low_scores[b] =  (nis[b] / (nis[b] + K)) * low_exps[b]
+
+    high_scores = torch.tensor(high_scores)
+    high_scores = high_scores / torch.sum(high_scores)
+    
+    low_scores = torch.tensor(low_scores)
+    low_scores = low_scores / torch.sum(low_scores)
+
+    
+    selected_high_bins = torch.multinomial(high_scores,num_points,replacement=True) 
+    selected_low_bins = torch.multinomial(low_scores,num_points,replacement=True) 
+    
+    for iter in range(num_functions):
+        datasets[f'f{iter}']=[]
+        for i in range(num_points):
+            high_index = torch.randint(low=0,high=len(bins[selected_high_bins[i]]),size=(1,))
+            low_index = torch.randint(low=0,high=len(bins[selected_low_bins[i]]),size=(1,))
+            high_index = bins[selected_high_bins[i]][high_index]
+            low_index = bins[selected_low_bins[i]][low_index]
+            if y_train[high_index]-y_train[low_index] > threshold_diff: 
+                sample = [(x_train[high_index], y_train[high_index]), (x_train[low_index],y_train[low_index])]
+                datasets[f'f{iter}'].append(sample) 
+    return datasets   
+
 ### Sampling 128 designs from offline data
 def sampling_from_offline_data(x, y, n_candidates=128, type='random', percentile_sampling=0.2, seed=0):
     y = y.view(-1)
