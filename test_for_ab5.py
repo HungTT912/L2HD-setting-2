@@ -110,12 +110,14 @@ def main():
     alpha = 0.8 
     eta = 0.5 if task.is_discrete else 0.05
     classifier_free_guidance_weight = -4 if task.is_discrete else -1.5
+    lengthscale = 5.0 if task.is_discrete else 1.0 
+    sampling_lr = 0.05 if task.is_discrete else 0.001
     
     nconfig.testing.eta = eta 
     nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
     nconfig.testing.alpha = alpha
-    for num_points in [128,256,512] :
-        folder_path = f'results/ablation_studies/ab1/num_points{num_points}/TFBind8-Exact-v0/sampling_lr0.05/initial_lengthscale5.0/delta0.25'
+    for type_no_gp in ['/last_bins','/two_big_bins',''] :
+        folder_path = f'results/ablation_studies/ab5/no_gp{type_no_gp}/{nconfig.task.name}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta0.25'
         results_100th = [] 
         results_80th = [] 
         results_50th = []
@@ -140,7 +142,7 @@ def main():
         mean_score_50th = np_result_50th.mean() 
         std_score_50th = np_result_50th.std()
         print(nconfig.task.name)
-        print(f'numpoints : {num_points}')
+        print(f'type of no GP : {type_no_gp}')
         print(mean_score_100th, std_score_100th)
         print(mean_score_80th, std_score_80th)
         print(mean_score_50th, std_score_50th)

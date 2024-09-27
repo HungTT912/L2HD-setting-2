@@ -114,8 +114,8 @@ def main():
     nconfig.testing.eta = eta 
     nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
     nconfig.testing.alpha = alpha
-    for num_points in [128,256,512] :
-        folder_path = f'results/ablation_studies/ab1/num_points{num_points}/TFBind8-Exact-v0/sampling_lr0.05/initial_lengthscale5.0/delta0.25'
+    for type_points in ['lowest','random'] :
+        folder_path = f'results/ablation_studies/ab2/{type_points}/TFBind8-Exact-v0/sampling_lr0.05/initial_lengthscale5.0/delta0.25'
         results_100th = [] 
         results_80th = [] 
         results_50th = []
@@ -140,7 +140,7 @@ def main():
         mean_score_50th = np_result_50th.mean() 
         std_score_50th = np_result_50th.std()
         print(nconfig.task.name)
-        print(f'numpoints : {num_points}')
+        print(f'type_points : {type_points}')
         print(mean_score_100th, std_score_100th)
         print(mean_score_80th, std_score_80th)
         print(mean_score_50th, std_score_50th)
