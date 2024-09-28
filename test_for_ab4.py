@@ -122,7 +122,7 @@ def main():
         'TFBind8-Exact-v0': 'results/tune_22_100steps/TFBind8-Exact-v0/num_fit_samples15500/sampling_lr0.05/initial_lengthscale5.0/delta0.25',
         'TFBind10-Exact-v0' : 'results/tune_22_100steps/TFBind10-Exact-v0/num_fit_samples10000/sampling_lr0.05/initial_lengthscale5.0/delta0.25'
     }
-    for type_conditioning in ['low','random'] :
+    for type_conditioning in ['highest'] :
         folder_path = task_to_path[nconfig.task.name]
         results_100th = [] 
         results_80th = [] 
@@ -130,7 +130,7 @@ def main():
         for seed in seed_list:
             nconfig.args.seed = seed 
             nconfig.testing.type_sampling = type_conditioning
-            nconfig.testing.percentile_sampling = 0.5
+            nconfig.testing.percentile_sampling = 0.2
             model_load_path = folder_path+f'/seed{seed}/BrownianBridge/checkpoint/top_model_epoch_100.pth'
             optim_sche_load_path = folder_path+f'/seed{seed}/BrownianBridge/checkpoint/top_optim_sche_epoch_100.pth'
             nconfig.model.model_load_path = model_load_path
