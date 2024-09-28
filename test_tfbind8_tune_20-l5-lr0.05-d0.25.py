@@ -113,10 +113,10 @@ def main():
     for lengthscale in [5.0]:
         for delta in [0.25]: 
 
-            folder_path = './tuning_results/tune_20/result' 
+            folder_path = './tuning_results/tune_23/result' 
             if not os.path.exists(folder_path): 
                 os.makedirs(folder_path)
-            file_path = f'./tuning_results/tune_20/result/tuning_result_tfbind8_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
+            file_path = f'./tuning_results/tune_23/result/tuning_result_tfbind8_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
 
             if not os.path.isfile(file_path):
                 with open(file_path, 'a') as file:
@@ -129,8 +129,8 @@ def main():
             for eta in [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.5, 1.0]:
                 for classifier_free_guidance_weight in [-4.0, -3.5, -3, -2.5, -2, -1.5]: 
                     for alpha in [0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0, 1.05, 1.1, 1.15, 1.2, 1.5, 1.8]: 
-                        if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
-                            continue 
+                        # if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
+                        #     continue 
                         print([lengthscale,delta, eta, alpha, classifier_free_guidance_weight])
                         results_100th = []
                         results_80th = []
