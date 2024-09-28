@@ -266,6 +266,8 @@ def sampling_from_offline_data(x, y, n_candidates=128, type='random', percentile
     y = y[indices]
     if type == 'highest':
         return x[-n_candidates:], y[-n_candidates:] 
+    if type == 'lowest': 
+        return x[:n_candidates], y[:n_candidates]
     tmp = len(x)
     percentile_index = int(percentile_sampling * len(x))
     if type == 'low':

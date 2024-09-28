@@ -1,2 +1,4 @@
-python3 test_for_ab5.py --config configs/ablation_studies/ab5_no_GP/Template-BBDM-tfbind8-no_GP.yaml \
-&python3 test_for_ab5.py --config configs/ablation_studies/ab5_no_GP/Template-BBDM-ant-no_GP.yaml 
+python3 test_for_ab4.py --config configs/ablation_studies/ab4_type_of_conditioning_points/Template-BBDM-ant-highest.yaml \
+&python3 test_for_ab4.py --config configs/ablation_studies/ab4_type_of_conditioning_points/Template-BBDM-dkitty-highest.yaml \
+&python3 test_for_ab4.py --config configs/ablation_studies/ab4_type_of_conditioning_points/Template-BBDM-tfbind8-highest.yaml \
+&python3 test_for_ab4.py --config configs/ablation_studies/ab4_type_of_conditioning_points/Template-BBDM-tfbind8-highest.yaml 
