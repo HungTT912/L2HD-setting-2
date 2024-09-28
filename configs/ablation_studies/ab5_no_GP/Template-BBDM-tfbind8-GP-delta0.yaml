@@ -70,5 +70,5 @@ training:
   save_interval: 20
   val_frac: 0.1
   validation_interval: 20
-tune: ablation_studies/ab5/no_gp
+tune: ablation_studies/ab5/gp_delta0
 wandb_name: ab5-tfbind8-gp-delta0
