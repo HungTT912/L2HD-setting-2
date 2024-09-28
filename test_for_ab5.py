@@ -119,7 +119,7 @@ def main():
     for type_no_gp in ['gp_delta0'] :
         folder_path = f'results/ablation_studies/ab5/no_gp{type_no_gp}/{nconfig.task.name}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta0.0'
         if type_no_gp == 'gp_delta0': 
-            folder_path = f'results/ablation_studies/ab5/gp_delta0/{nconfig.task.name}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta0.25'
+            folder_path = f'results/ablation_studies/ab5/gp_delta0/{nconfig.task.name}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta0.0'
         results_100th = [] 
         results_80th = [] 
         results_50th = []
