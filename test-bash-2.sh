@@ -1,1 +1,1 @@
-python3 test_for_ab1_ant.py --config configs/ablation_studies/ab1_GP_num_of_initial_points/Template-BBDM-ant-num_points_128.yaml 
+python3 test_for_num_fit_samples.py --config configs/ablation_studies/ab4_type_of_conditioning_points/Template-BBDM-tfbind8-highest.yaml
