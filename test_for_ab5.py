@@ -117,7 +117,7 @@ def main():
     nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
     nconfig.testing.alpha = alpha
     for type_no_gp in ['/two_big_bins','gp_delta0'] :
-        folder_path = f'results/ablation_studies/ab5/no_gp{type_no_gp}/{nconfig.task.name}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta0.25'
+        folder_path = f'results/ablation_studies/ab5/no_gp{type_no_gp}/{nconfig.task.name}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta0.0'
         if type_no_gp == 'gp_delta0': 
             folder_path = f'results/ablation_studies/ab5/gp_delta0/{nconfig.task.name}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta0.25'
         results_100th = [] 
