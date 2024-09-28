@@ -113,46 +113,48 @@ def main():
     lengthscale = 5.0 if task.is_discrete else 1.0 
     sampling_lr = 0.05 if task.is_discrete else 0.001
     
-    nconfig.testing.eta = eta 
-    nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
-    nconfig.testing.alpha = alpha
     task_to_path ={
         'AntMorphology-Exact-v0': 'results/tune_20/AntMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25',
         'DKittyMorphology-Exact-v0': 'results/tune_20/DKittyMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25',
         'TFBind8-Exact-v0': 'results/tune_22_100steps/TFBind8-Exact-v0/num_fit_samples15500/sampling_lr0.05/initial_lengthscale5.0/delta0.25',
         'TFBind10-Exact-v0' : 'results/tune_22_100steps/TFBind10-Exact-v0/num_fit_samples10000/sampling_lr0.05/initial_lengthscale5.0/delta0.25'
     }
-    for num_fit_samples in [15500, 15000, 14500, 16000, 17000, 9000, 10000, 13000, 14000, 14500, 7500,8000,8500] :
-        folder_path = f'results/tune_22_100steps/TFBind8-Exact-v0/num_fit_samples{num_fit_samples}/sampling_lr0.05/initial_lengthscale5.0/delta0.25'
-        results_100th = [] 
-        results_80th = [] 
-        results_50th = []
-        for seed in seed_list:
-            nconfig.args.seed = seed 
-            nconfig.testing.type_sampling = 'highest'
-            model_load_path = folder_path+f'/seed{seed}/BrownianBridge/checkpoint/top_model_epoch_100.pth'
-            optim_sche_load_path = folder_path+f'/seed{seed}/BrownianBridge/checkpoint/top_optim_sche_epoch_100.pth'
-            nconfig.model.model_load_path = model_load_path
-            nconfig.model.optim_sche_load_path = optim_sche_load_path
-            result = tester(nconfig,task)
-            print("Score : ",result[0]) 
-            results_100th.append(result[0])
-            results_80th.append(result[1]) 
-            results_50th.append(result[2])
-        np_result_100th = np.array(results_100th)
-        mean_score_100th = np_result_100th.mean() 
-        std_score_100th = np_result_100th.std()
-        np_result_80th = np.array(results_80th)
-        mean_score_80th = np_result_80th.mean() 
-        std_score_80th = np_result_80th.std()
-        np_result_50th = np.array(results_50th)
-        mean_score_50th = np_result_50th.mean() 
-        std_score_50th = np_result_50th.std()
-        print(nconfig.task.name)
-        print(f'num_fit_samples : {num_fit_samples}')
-        print(mean_score_100th, std_score_100th)
-        print(mean_score_80th, std_score_80th)
-        print(mean_score_50th, std_score_50th)
+    hyper = [[0.5,0.85,-4.0], [0.5,0.90,-3.5],[0.5,1.00,-3.0], [0.5,0.80,-4.0]]
+    for eta, alpha, w in hyper : 
+        for num_fit_samples in [15500, 15000, 14500, 16000, 17000, 9000, 10000, 13000, 14000, 14500, 7500,8000,8500] :
+            folder_path = f'results/tune_22_100steps/TFBind8-Exact-v0/num_fit_samples{num_fit_samples}/sampling_lr0.05/initial_lengthscale5.0/delta0.25'
+            results_100th = [] 
+            results_80th = [] 
+            results_50th = []
+            for seed in seed_list:
+                nconfig.testing.eta = eta 
+                nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
+                nconfig.testing.alpha = alpha
+                nconfig.args.seed = seed 
+                nconfig.testing.type_sampling = 'highest'
+                model_load_path = folder_path+f'/seed{seed}/BrownianBridge/checkpoint/top_model_epoch_100.pth'
+                optim_sche_load_path = folder_path+f'/seed{seed}/BrownianBridge/checkpoint/top_optim_sche_epoch_100.pth'
+                nconfig.model.model_load_path = model_load_path
+                nconfig.model.optim_sche_load_path = optim_sche_load_path
+                result = tester(nconfig,task)
+                print("Score : ",result[0]) 
+                results_100th.append(result[0])
+                results_80th.append(result[1]) 
+                results_50th.append(result[2])
+            np_result_100th = np.array(results_100th)
+            mean_score_100th = np_result_100th.mean() 
+            std_score_100th = np_result_100th.std()
+            np_result_80th = np.array(results_80th)
+            mean_score_80th = np_result_80th.mean() 
+            std_score_80th = np_result_80th.std()
+            np_result_50th = np.array(results_50th)
+            mean_score_50th = np_result_50th.mean() 
+            std_score_50th = np_result_50th.std()
+            print(nconfig.task.name)
+            print(f'num_fit_samples : {num_fit_samples}')
+            print(mean_score_100th, std_score_100th)
+            print(mean_score_80th, std_score_80th)
+            print(mean_score_50th, std_score_50th)
         
     nconfig.args.train = False 
     wandb.finish() 
