@@ -190,7 +190,7 @@ def main():
     num_fit_samples = nconfig.GP.num_fit_samples
     sampling_lr = 0.05
 
-    for lengthscale in [6.0]:
+    for lengthscale in [5.0]:
         for delta in [0.25]: 
 
             folder_path = './tuning_results/tune_22_100steps/result' 
@@ -205,7 +205,7 @@ def main():
                     writer.writerow(header)
             df = pd.read_csv(file_path) 
             tested_parameters = df[['lengthscale','delta','eta','alpha','classifier_free_guidance_weight']].values.tolist()
-                
+            best_tf8_hyper = [[0.5,0.80,-4.0]]
             for eta, alpha, classifier_free_guidance_weight in best_tf8_hyper: 
                 if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
                     continue 

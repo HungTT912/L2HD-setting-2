@@ -29,8 +29,8 @@ task:
   normalize_x: True
 
 GP: 
-  initial_lengthscale: 6.0
-  initial_outputscale: 6.0
+  initial_lengthscale: 5.0
+  initial_outputscale: 5.0
   noise: 1.e-2
   num_functions: 8
   num_gradient_steps: 50
