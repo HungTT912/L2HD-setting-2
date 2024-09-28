@@ -128,7 +128,7 @@ def main():
             results_50th = []
             for seed in seed_list:
                 nconfig.testing.eta = eta 
-                nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
+                nconfig.testing.classifier_free_guidance_weight = w
                 nconfig.testing.alpha = alpha
                 nconfig.args.seed = seed 
                 nconfig.testing.type_sampling = 'highest'
