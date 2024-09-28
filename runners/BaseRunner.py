@@ -14,7 +14,7 @@ from abc import ABC, abstractmethod
 from tqdm.autonotebook import tqdm
 
 from runners.base.EMA import EMA
-from runners.utils import make_save_dirs, remove_file, construct_bins_with_scores,sampling_data_from_GP, sampling_data_from_trajectories, create_train_dataloader, create_val_dataloader, sampling_from_offline_data, testing_by_oracle
+from runners.utils import make_save_dirs, remove_file, sampling_data_from_GP, create_train_dataloader, create_val_dataloader, sampling_from_offline_data, testing_by_oracle
 import numpy as np
 
 import gpytorch 
@@ -48,7 +48,7 @@ class BaseRunner(ABC):
         #                                                         with_time=True)
         if self.config.args.train:
             self.config.result.ckpt_path = make_save_dirs(self.config.args,
-                                                    prefix=self.config.tune+'/'+ self.config.task.name + f'/sampling_lr{self.config.GP.sampling_from_GP_lr}/initial_lengthscale{self.config.GP.initial_lengthscale}/delta{self.config.GP.delta_lengthscale}/seed{self.config.args.seed}',
+                                                    prefix=self.config.tune+'/'+ self.config.task.name + f'/num_fit_samples{self.config.GP.num_fit_samples}/sampling_lr{self.config.GP.sampling_from_GP_lr}/initial_lengthscale{self.config.GP.initial_lengthscale}/delta{self.config.GP.delta_lengthscale}/seed{self.config.args.seed}',
                                                     suffix=self.config.model.model_name,
                                                     with_time=False)
             # self.config.result.ckpt_path = make_save_dirs(self.config.args,
@@ -81,16 +81,16 @@ class BaseRunner(ABC):
         
         # get offline data from design-bench
         
-        # if self.config.args.train == True or self.config.task.name != 'TFBind10-Exact-v0': 
-        self.offline_x, self.mean_offline_x, self.std_offline_x, self.offline_y, self.mean_offline_y, self.std_offline_y = self.get_offline_data()
+        if self.config.args.train == True or self.config.task.name != 'TFBind10-Exact-v0': 
+            self.offline_x, self.mean_offline_x, self.std_offline_x, self.offline_y, self.mean_offline_y, self.std_offline_y = self.get_offline_data()
+            
+            if self.config.task.normalize_x:
+                self.offline_x = (self.offline_x - self.mean_offline_x) / self.std_offline_x
+            if self.config.task.normalize_y:
+                self.offline_y = (self.offline_y - self.mean_offline_y) / self.std_offline_y
         
-        if self.config.task.normalize_x:
-            self.offline_x = (self.offline_x - self.mean_offline_x) / self.std_offline_x
-        if self.config.task.normalize_y:
-            self.offline_y = (self.offline_y - self.mean_offline_y) / self.std_offline_y
-    
-        self.offline_x = self.offline_x.to(self.config.training.device[0])
-        self.offline_y = self.offline_y.to(self.config.training.device[0])
+            self.offline_x = self.offline_x.to(self.config.training.device[0])
+            self.offline_y = self.offline_y.to(self.config.training.device[0])
 
     def get_offline_data(self):
         if self.config.task.name != 'TFBind10-Exact-v0':
@@ -352,27 +352,20 @@ class BaseRunner(ABC):
             mean_prior = torch.tensor(0.0, device = self.config.training.device[0]) 
             
             #GP_Model.set_hyper(lengthscale=lengthscale,variance=variance)
-            #best_indices = torch.argsort(self.offline_y)[-1024:]
-            # self.best_x = self.offline_x[best_indices]
+            best_indices = torch.argsort(self.offline_y)[-1024:]
+            self.best_x = self.offline_x[best_indices]
             
-            if self.config.GP.type_of_initial_points == 'highest':
-                best_indices = torch.argsort(self.offline_y)[-1024:]
-                self.best_x = self.offline_x[best_indices]
-            elif self.config.GP.type_of_initial_points == 'lowest': 
-                best_indices = torch.argsort(self.offline_y)[:1024]
-                self.best_x = self.offline_x[best_indices]
-            else : 
-                self.best_x = self.offline_x 
+            # if self.config.GP.type_of_initial_points == 'highest':
+            #     best_indices = torch.argsort(self.offline_y)[-1024:]
+            #     self.best_x = self.offline_x[best_indices]
+            # elif self.config.GP.type_of_initial_points == 'lowest': 
+            #     best_indices = torch.argsort(self.offline_y)[:1024]
+            #     self.best_x = self.offline_x[best_indices]
+            # else : 
+            #     self.best_x = self.offline_x 
             
             val_loader = None
             val_dataset = []
-            if self.config.training.no_GP == True : 
-                self.bins, self.high_scores, self.low_scores = construct_bins_with_scores(x_train=self.offline_x,
-                                                                                        y_train=self.offline_y,
-                                                                                        device = self.config.training.device[0], 
-                                                                                        num_functions=self.config.GP.num_functions, 
-                                                                                        num_points=self.config.GP.num_points,
-                                                                                        threshold_diff = self.config.GP.threshold_diff)
             
             accumulate_grad_batches = self.config.training.accumulate_grad_batches 
             for epoch in range(start_epoch, self.config.training.n_epochs):
@@ -395,30 +388,19 @@ class BaseRunner(ABC):
                                 variance=variance, 
                                 noise=noise, 
                                 mean_prior=mean_prior)
-                if self.config.training.no_GP == True : 
-                    data_from_GP = sampling_data_from_trajectories(x_train=self.offline_x,
-                                                                y_train=self.offline_y,
-                                                                high_scores=self.high_scores,
-                                                                low_scores=self.low_scores,
-                                                                bins=self.bins,
-                                                                device = self.config.training.device[0], 
-                                                                num_functions=self.config.GP.num_functions, 
-                                                                num_points=self.config.GP.num_points,
-                                                                threshold_diff = self.config.GP.threshold_diff,
-                                                                last_bins=self.config.GP.last_bins,
-                                                                two_big_bins=self.config.GP.two_big_bins)
-                else : 
-                    data_from_GP = sampling_data_from_GP(x_train=self.best_x,
-                                                        device=self.config.training.device[0],
-                                                        GP_Model=GP_Model,
-                                                        num_functions=self.config.GP.num_functions,
-                                                        num_gradient_steps=self.config.GP.num_gradient_steps,
-                                                        num_points=self.config.GP.num_points,
-                                                        learning_rate=self.config.GP.sampling_from_GP_lr,
-                                                        delta_lengthscale=self.config.GP.delta_lengthscale,
-                                                        delta_variance=self.config.GP.delta_variance,
-                                                        seed=epoch,
-                                                        threshold_diff=self.config.GP.threshold_diff)
+                # if self.config.training.no_GP == True : 
+                #     data_from_GP = sampling_from_offline_data
+                data_from_GP = sampling_data_from_GP(x_train=self.best_x,
+                                                    device=self.config.training.device[0],
+                                                    GP_Model=GP_Model,
+                                                    num_functions=self.config.GP.num_functions,
+                                                    num_gradient_steps=self.config.GP.num_gradient_steps,
+                                                    num_points=self.config.GP.num_points,
+                                                    learning_rate=self.config.GP.sampling_from_GP_lr,
+                                                    delta_lengthscale=self.config.GP.delta_lengthscale,
+                                                    delta_variance=self.config.GP.delta_variance,
+                                                    seed=epoch,
+                                                    threshold_diff=self.config.GP.threshold_diff)
                 train_loader, current_epoch_val_dataset = create_train_dataloader(data_from_GP=data_from_GP,
                                                         val_frac=self.config.training.val_frac,
                                                         batch_size=self.config.training.batch_size,
