@@ -122,7 +122,7 @@ def main():
         'TFBind8-Exact-v0': 'results/tune_22_100steps/TFBind8-Exact-v0/num_fit_samples15500/sampling_lr0.05/initial_lengthscale5.0/delta0.25',
         'TFBind10-Exact-v0' : 'results/tune_22_100steps/TFBind10-Exact-v0/num_fit_samples10000/sampling_lr0.05/initial_lengthscale5.0/delta0.25'
     }
-    for type_conditioning in ['low','high','lowest', 'highest','random'] :
+    for type_conditioning in ['low','high','lowest','random'] :
         folder_path = task_to_path[nconfig.task.name]
         results_100th = [] 
         results_80th = [] 
