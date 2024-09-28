@@ -200,13 +200,12 @@ def main():
                     writer.writerow(header)
             df = pd.read_csv(file_path) 
             tested_parameters = df[['lengthscale','delta','eta','alpha','classifier_free_guidance_weight']].values.tolist()
-            alpha = 0.95
-        
+            alpha = 0.8
         
             for classifier_free_guidance_weight in [-1.5] :
-                for eta in [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.5, 1.0]:   
-                    if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
-                        continue 
+                for eta in [0.05]:   
+                    # if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
+                    #     continue 
                     print([lengthscale,delta, eta, alpha, classifier_free_guidance_weight])
                     results_100th = []
                     results_80th = []
