@@ -119,8 +119,8 @@ def main():
     for seed in seed_list: 
         nconfig.args.train=False 
         nconfig.args.seed = seed
-        nconfig.model.model_load_path = model_load_path[seed]
-        nconfig.model.optim_sche_load_path = optim_sche_load_path[seed]
+        nconfig.model.model_load_path = model_load_path_list[seed]
+        nconfig.model.optim_sche_load_path = optim_sche_load_path_list[seed]
         result = tester(nconfig,task)
         print("Score : ",result[0]) 
         results_100th.append(result[0])
