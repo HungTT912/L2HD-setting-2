@@ -173,9 +173,9 @@ def main():
         # offline_y = offline_y[shuffle_idx]
         offline_x = offline_x.to(nconfig.training.device[0])
         offline_y = offline_y.to(nconfig.training.device[0])
-        # sorted_indices = torch.argsort(offline_y)[-128:] 
-        # offline_x = offline_x[sorted_indices] 
-        # offline_y = offline_y[sorted_indices] 
+        sorted_indices = torch.argsort(offline_y)[-128:] 
+        offline_x = offline_x[sorted_indices] 
+        offline_y = offline_y[sorted_indices] 
         
         offline_x_list.append(offline_x) 
         offline_y_list.append(offline_y) 
