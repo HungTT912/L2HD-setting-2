@@ -131,10 +131,10 @@ def main():
     else:
         nconfig.training.device = [torch.device(f"cuda:{gpu_ids}")]
     
-    # wandb.login(key='1cfab558732ccb32d573a7276a337d22b7d8b371')
-    # wandb.init(project='BBDM',
-    #         name='test'+nconfig.wandb_name,
-    #         config = dconfig) 
+    wandb.login(key='1cfab558732ccb32d573a7276a337d22b7d8b371')
+    wandb.init(project='BBDM',
+            name='test'+nconfig.wandb_name,
+            config = dconfig) 
     
     # df = pd.read_csv('./tuning_results/tune_11/result/tuning_result_dkitty_eta.csv')
     # df = df[df['mean (100th)']>=0.9595]
