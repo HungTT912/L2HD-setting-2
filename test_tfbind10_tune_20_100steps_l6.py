@@ -183,13 +183,13 @@ def main():
     num_fit_samples = nconfig.GP.num_fit_samples
     sampling_lr = 0.05
 
-    for lengthscale in [5.0]:
+    for lengthscale in [6.0]:
         for delta in [0.25]: 
 
-            folder_path = './tuning_results/tune_22_100steps/result' 
+            folder_path = './tuning_results/tune_23/result' 
             if not os.path.exists(folder_path): 
                 os.makedirs(folder_path)
-            file_path = f'./tuning_results/tune_22_100steps/result/tuning_result_tfbind10_num_fit_samples{num_fit_samples}_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
+            file_path = f'./tuning_results/tune_23/result/tuning_result_tfbind10_num_fit_samples{num_fit_samples}_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
 
             if not os.path.isfile(file_path):
                 with open(file_path, 'a') as file:
@@ -205,8 +205,8 @@ def main():
             #     best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
             best_tf8_hyper = [[1.0,0.95,-3.5]]
             for eta, alpha, classifier_free_guidance_weight in best_tf8_hyper: 
-                if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
-                    continue 
+                # if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
+                #     continue 
                 print([lengthscale,delta, eta, alpha, classifier_free_guidance_weight])
                 results_100th = []
                 results_80th = []
@@ -214,7 +214,7 @@ def main():
                 nconfig.model.BB.params.eta = eta 
                 for seed in seed_list:      
                     nconfig.training.classifier_free_guidance_prob = classifier_free_guidance_prob 
-                    cmd = f"grep -Rlw './results/tune_22_100steps/TFBind10-Exact-v0/num_fit_samples{num_fit_samples}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta{delta}/seed{seed}' -e 'train: true'"
+                    cmd = f"grep -Rlw './results/tune_20/TFBind10-Exact-v0/sampling_lr0.05/initial_lengthscale6.0/delta0.25/seed{seed}' -e 'train: true'"
                     result_path = subprocess.check_output(cmd, shell=True, text=True)
                     result_path = result_path.strip()
                     #print(result_path)
