@@ -57,7 +57,7 @@ python3 -m pip install wandb
 python3 -m pip install numpy==1.22.4
 python3 -m pip install omegaconf
 python3 -m pip install einops
-export PYTHONPATH=/home/user03/miniconda3/envs/BBDM/lib/python3.9/site-packages/:/cm/shared/apps/jupyter/15.3.0/lib64/python3.9/site-packages/:/cm/shared/apps/jupyter/15.3.0/lib/python3.9/site-packages/
+export PYTHONPATH=/home/user01/miniconda3/envs/BBDM/lib/python3.9/site-packages/:/cm/shared/apps/jupyter/15.3.0/lib64/python3.9/site-packages/:/cm/shared/apps/jupyter/15.3.0/lib/python3.9/site-packages/
 
 ```
 
