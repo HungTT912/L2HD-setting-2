@@ -107,18 +107,18 @@ def trainer(config):
     runner = get_runner(config.runner, config)
     return runner.train()
 def tester(config, task):
-    global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
-    offline_x = offline_x_list[config.args.seed] 
-    offline_y = offline_y_list[config.args.seed]
-    mean_x = mean_x_list[config.args.seed] 
-    mean_y = mean_y_list[config.args.seed] 
-    std_x = std_x_list[config.args.seed] 
-    std_y = std_y_list[config.args.seed] 
+    # global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
+    # offline_x = offline_x_list[config.args.seed] 
+    # offline_y = offline_y_list[config.args.seed]
+    # mean_x = mean_x_list[config.args.seed] 
+    # mean_y = mean_y_list[config.args.seed] 
+    # std_x = std_x_list[config.args.seed] 
+    # std_y = std_y_list[config.args.seed] 
     
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
-    runner.offline_x, runner.mean_offline_x, runner.std_offline_x = offline_x, mean_x, std_x 
-    runner.offline_y, runner.mean_offline_y, runner.std_offline_y = offline_y, mean_y, std_y 
+    # runner.offline_x, runner.mean_offline_x, runner.std_offline_x = offline_x, mean_x, std_x 
+    # runner.offline_y, runner.mean_offline_y, runner.std_offline_y = offline_y, mean_y, std_y 
     
     return runner.test(task) 
 
@@ -153,29 +153,29 @@ def main():
     if task.is_discrete: 
         task.map_to_logits()
         
-    global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
-    offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list = [],[],[],[],[],[] 
-    for seed in seed_list : 
-        global offline_x, mean_x, std_x, offline_y, mean_y, std_y 
-        set_random_seed(seed)
-        offline_x, mean_x, std_x , offline_y, mean_y , std_y = get_offline_data(nconfig)
-        offline_x = (offline_x - mean_x) / std_x
-        offline_y = (offline_y - mean_y) / std_y   
-        shuffle_idx = np.random.permutation(offline_x.shape[0])
-        offline_x = offline_x[shuffle_idx]
-        offline_y = offline_y[shuffle_idx]
-        offline_x = offline_x.to(nconfig.training.device[0])
-        offline_y = offline_y.to(nconfig.training.device[0])
-        sorted_indices = torch.argsort(offline_y)[-128:] 
-        offline_x = offline_x[sorted_indices] 
-        offline_y = offline_y[sorted_indices] 
+    # global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
+    # offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list = [],[],[],[],[],[] 
+    # for seed in seed_list : 
+    #     global offline_x, mean_x, std_x, offline_y, mean_y, std_y 
+    #     set_random_seed(seed)
+    #     offline_x, mean_x, std_x , offline_y, mean_y , std_y = get_offline_data(nconfig)
+    #     offline_x = (offline_x - mean_x) / std_x
+    #     offline_y = (offline_y - mean_y) / std_y   
+    #     shuffle_idx = np.random.permutation(offline_x.shape[0])
+    #     offline_x = offline_x[shuffle_idx]
+    #     offline_y = offline_y[shuffle_idx]
+    #     offline_x = offline_x.to(nconfig.training.device[0])
+    #     offline_y = offline_y.to(nconfig.training.device[0])
+    #     sorted_indices = torch.argsort(offline_y)[-128:] 
+    #     offline_x = offline_x[sorted_indices] 
+    #     offline_y = offline_y[sorted_indices] 
         
-        offline_x_list.append(offline_x) 
-        offline_y_list.append(offline_y) 
-        mean_x_list.append(mean_x) 
-        std_x_list.append(std_x) 
-        mean_y_list.append(mean_y)
-        std_y_list.append(std_y) 
+    #     offline_x_list.append(offline_x) 
+    #     offline_y_list.append(offline_y) 
+    #     mean_x_list.append(mean_x) 
+    #     std_x_list.append(std_x) 
+    #     mean_y_list.append(mean_y)
+    #     std_y_list.append(std_y) 
         
         
 
@@ -198,72 +198,73 @@ def main():
                     writer.writerow(header)
             df = pd.read_csv(file_path) 
             tested_parameters = df[['lengthscale','delta','eta','alpha','classifier_free_guidance_weight']].values.tolist()
-            num_fit_samples_list = [8000, 13000, 16000, 17000, ] 
-            for num_fit_samples_tf8 in num_fit_samples_list : 
-                best_tf8_hyper = pd.read_csv(f'./tuning_results/tune_22_100steps/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples_tf8}_lengthscale5.0_sampling_lr0.05_delta0.25.csv')
-                best_tf8_hyper = best_tf8_hyper[best_tf8_hyper['mean (100th)']>0.9795]
-                best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
+            # num_fit_samples_list = [8000, 13000, 16000, 17000, ] 
+            # for num_fit_samples_tf8 in num_fit_samples_list : 
+            #     best_tf8_hyper = pd.read_csv(f'./tuning_results/tune_22_100steps/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples_tf8}_lengthscale5.0_sampling_lr0.05_delta0.25.csv')
+            #     best_tf8_hyper = best_tf8_hyper[best_tf8_hyper['mean (100th)']>0.9795]
+            #     best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
+            best_tf8_hyper = [[1.0,0.95,-3.5]]
+            for eta, alpha, classifier_free_guidance_weight in best_tf8_hyper: 
+                if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
+                    continue 
+                print([lengthscale,delta, eta, alpha, classifier_free_guidance_weight])
+                results_100th = []
+                results_80th = []
+                results_50th = []
+                nconfig.model.BB.params.eta = eta 
+                for seed in seed_list:      
+                    nconfig.training.classifier_free_guidance_prob = classifier_free_guidance_prob 
+                    cmd = f"grep -Rlw './results/tune_22_100steps/TFBind10-Exact-v0/num_fit_samples{num_fit_samples}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta{delta}/seed{seed}' -e 'train: true'"
+                    result_path = subprocess.check_output(cmd, shell=True, text=True)
+                    result_path = result_path.strip()
+                    #print(result_path)
+                    cmd = 'find ' + result_path[:-12]+ " -name 'top_model*'"
+                    model_load_path = subprocess.check_output(cmd, shell = True, text= True) 
+                    model_load_path = model_load_path.strip() 
+                    cmd = 'find ' + result_path[:-12]+ " -name 'top_optim*'"
+                    optim_sche_load_path = subprocess.check_output(cmd, shell = True, text= True) 
+                    optim_sche_load_path = optim_sche_load_path.strip()
+                    print(model_load_path)
+                    nconfig.args.train = False 
                 
-                for eta, alpha, classifier_free_guidance_weight in best_tf8_hyper: 
-                    if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
-                        continue 
-                    print([lengthscale,delta, eta, alpha, classifier_free_guidance_weight])
-                    results_100th = []
-                    results_80th = []
-                    results_50th = []
-                    nconfig.model.BB.params.eta = eta 
-                    for seed in seed_list:      
-                        nconfig.training.classifier_free_guidance_prob = classifier_free_guidance_prob 
-                        cmd = f"grep -Rlw './results/tune_22_100steps/TFBind10-Exact-v0/num_fit_samples{num_fit_samples}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta{delta}/seed{seed}' -e 'train: true'"
-                        result_path = subprocess.check_output(cmd, shell=True, text=True)
-                        result_path = result_path.strip()
-                        #print(result_path)
-                        cmd = 'find ' + result_path[:-12]+ " -name 'top_model*'"
-                        model_load_path = subprocess.check_output(cmd, shell = True, text= True) 
-                        model_load_path = model_load_path.strip() 
-                        cmd = 'find ' + result_path[:-12]+ " -name 'top_optim*'"
-                        optim_sche_load_path = subprocess.check_output(cmd, shell = True, text= True) 
-                        optim_sche_load_path = optim_sche_load_path.strip()
-                        print(model_load_path)
-                        nconfig.args.train = False 
-                    
-                        nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
-                        nconfig.testing.alpha = alpha
-                        nconfig.model.model_load_path = model_load_path
-                        nconfig.model.optim_sche_load_path = optim_sche_load_path
-                        nconfig.args.seed = seed
-                        starttime = time.time() 
-                        result = tester(nconfig, task)
-                        endtime = time.time() 
-                        print("Score : ",result[0]) 
-                        print("Computing time : ", endtime-starttime)
-                        results_100th.append(result[0])
-                        results_80th.append(result[1]) 
-                        results_50th.append(result[2]) 
-                    
-                    assert len(results_100th) == 8 
-                    assert nconfig.GP.sampling_from_GP_lr == sampling_lr 
-                    assert nconfig.GP.delta_lengthscale == delta 
-                    assert nconfig.GP.initial_lengthscale == lengthscale 
-                    
-                    np_result_100th = np.array(results_100th)
-                    mean_score_100th = np_result_100th.mean() 
-                    std_score_100th = np_result_100th.std()
-                    np_result_80th = np.array(results_80th)
-                    mean_score_80th = np_result_80th.mean() 
-                    std_score_80th = np_result_80th.std()
-                    np_result_50th = np.array(results_50th)
-                    mean_score_50th = np_result_50th.mean() 
-                    std_score_50th = np_result_50th.std()
-                    print(mean_score_100th)
-                    
-                    with open(file_path, 'a') as file:
-                        new_row = [sampling_lr,lengthscale,delta, eta, alpha, classifier_free_guidance_weight, mean_score_100th, std_score_100th, mean_score_80th, std_score_80th, mean_score_50th, std_score_50th]
-                        writer = csv.writer(file)
-                        writer.writerow(new_row)
-                        df = pd.read_csv(file_path)
-                        table = wandb.Table(dataframe=df)
-                        wandb.log({"data_table": table})
+                    nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
+                    nconfig.testing.alpha = alpha
+                    nconfig.model.model_load_path = model_load_path
+                    nconfig.model.optim_sche_load_path = optim_sche_load_path
+                    nconfig.args.seed = seed
+                    starttime = time.time() 
+                    result = tester(nconfig, task)
+                    endtime = time.time() 
+                    print("Score : ",result[0]) 
+                    print("Computing time : ", endtime-starttime)
+                    results_100th.append(result[0])
+                    results_80th.append(result[1]) 
+                    results_50th.append(result[2]) 
+                
+                assert len(results_100th) == 8 
+                assert nconfig.GP.sampling_from_GP_lr == sampling_lr 
+                assert nconfig.GP.delta_lengthscale == delta 
+                assert nconfig.GP.initial_lengthscale == lengthscale 
+                
+                np_result_100th = np.array(results_100th)
+                mean_score_100th = np_result_100th.mean() 
+                std_score_100th = np_result_100th.std()
+                np_result_80th = np.array(results_80th)
+                mean_score_80th = np_result_80th.mean() 
+                std_score_80th = np_result_80th.std()
+                np_result_50th = np.array(results_50th)
+                mean_score_50th = np_result_50th.mean() 
+                std_score_50th = np_result_50th.std()
+                print([eta,alpha,classifier_free_guidance_weight])
+                print(mean_score_100th)
+                
+                with open(file_path, 'a') as file:
+                    new_row = [sampling_lr,lengthscale,delta, eta, alpha, classifier_free_guidance_weight, mean_score_100th, std_score_100th, mean_score_80th, std_score_80th, mean_score_50th, std_score_50th]
+                    writer = csv.writer(file)
+                    writer.writerow(new_row)
+                    df = pd.read_csv(file_path)
+                    table = wandb.Table(dataframe=df)
+                    wandb.log({"data_table": table})
     wandb.finish()
 
 if __name__ == "__main__":
