@@ -107,18 +107,18 @@ def trainer(config):
     runner = get_runner(config.runner, config)
     return runner.train()
 def tester(config, task):
-    global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
-    offline_x = offline_x_list[config.args.seed] 
-    offline_y = offline_y_list[config.args.seed]
-    mean_x = mean_x_list[config.args.seed] 
-    mean_y = mean_y_list[config.args.seed] 
-    std_x = std_x_list[config.args.seed] 
-    std_y = std_y_list[config.args.seed] 
+    # global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
+    # offline_x = offline_x_list[config.args.seed] 
+    # offline_y = offline_y_list[config.args.seed]
+    # mean_x = mean_x_list[config.args.seed] 
+    # mean_y = mean_y_list[config.args.seed] 
+    # std_x = std_x_list[config.args.seed] 
+    # std_y = std_y_list[config.args.seed] 
     
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
-    runner.offline_x, runner.mean_offline_x, runner.std_offline_x = offline_x, mean_x, std_x 
-    runner.offline_y, runner.mean_offline_y, runner.std_offline_y = offline_y, mean_y, std_y 
+    # runner.offline_x, runner.mean_offline_x, runner.std_offline_x = offline_x, mean_x, std_x 
+    # runner.offline_y, runner.mean_offline_y, runner.std_offline_y = offline_y, mean_y, std_y 
     
     return runner.test(task) 
 
@@ -158,29 +158,29 @@ def main():
     #     'TFBind8-Exact-v0': 'results/tune_22_100steps/TFBind8-Exact-v0/num_fit_samples15500/sampling_lr0.05/initial_lengthscale5.0/delta0.25',
     #     'TFBind10-Exact-v0' : 'results/tune_22_100steps/TFBind10-Exact-v0/num_fit_samples10000/sampling_lr0.05/initial_lengthscale5.0/delta0.25'
     # }
-    global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
-    offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list = [],[],[],[],[],[] 
-    for seed in seed_list : 
-        global offline_x, mean_x, std_x, offline_y, mean_y, std_y 
-        set_random_seed(seed)
-        offline_x, mean_x, std_x , offline_y, mean_y , std_y = get_offline_data(nconfig)
-        offline_x = (offline_x - mean_x) / std_x
-        offline_y = (offline_y - mean_y) / std_y   
-        shuffle_idx = np.random.permutation(offline_x.shape[0])
-        offline_x = offline_x[shuffle_idx]
-        offline_y = offline_y[shuffle_idx]
-        offline_x = offline_x.to(nconfig.training.device[0])
-        offline_y = offline_y.to(nconfig.training.device[0])
-        sorted_indices = torch.argsort(offline_y)[-128:] 
-        offline_x = offline_x[sorted_indices] 
-        offline_y = offline_y[sorted_indices] 
+    # global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
+    # offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list = [],[],[],[],[],[] 
+    # for seed in seed_list : 
+    #     global offline_x, mean_x, std_x, offline_y, mean_y, std_y 
+    #     set_random_seed(seed)
+    #     offline_x, mean_x, std_x , offline_y, mean_y , std_y = get_offline_data(nconfig)
+    #     offline_x = (offline_x - mean_x) / std_x
+    #     offline_y = (offline_y - mean_y) / std_y   
+    #     shuffle_idx = np.random.permutation(offline_x.shape[0])
+    #     offline_x = offline_x[shuffle_idx]
+    #     offline_y = offline_y[shuffle_idx]
+    #     offline_x = offline_x.to(nconfig.training.device[0])
+    #     offline_y = offline_y.to(nconfig.training.device[0])
+    #     sorted_indices = torch.argsort(offline_y)[-128:] 
+    #     offline_x = offline_x[sorted_indices] 
+    #     offline_y = offline_y[sorted_indices] 
         
-        offline_x_list.append(offline_x) 
-        offline_y_list.append(offline_y) 
-        mean_x_list.append(mean_x) 
-        std_x_list.append(std_x) 
-        mean_y_list.append(mean_y)
-        std_y_list.append(std_y) 
+    #     offline_x_list.append(offline_x) 
+    #     offline_y_list.append(offline_y) 
+    #     mean_x_list.append(mean_x) 
+    #     std_x_list.append(std_x) 
+    #     mean_y_list.append(mean_y)
+    #     std_y_list.append(std_y) 
 
     seed_list = range(8)
     num_fit_samples = 10000
