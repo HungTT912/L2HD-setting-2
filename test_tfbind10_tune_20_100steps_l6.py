@@ -107,18 +107,18 @@ def trainer(config):
     runner = get_runner(config.runner, config)
     return runner.train()
 def tester(config, task):
-    # global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
-    # offline_x = offline_x_list[config.args.seed] 
-    # offline_y = offline_y_list[config.args.seed]
-    # mean_x = mean_x_list[config.args.seed] 
-    # mean_y = mean_y_list[config.args.seed] 
-    # std_x = std_x_list[config.args.seed] 
-    # std_y = std_y_list[config.args.seed] 
+    global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
+    offline_x = offline_x_list[config.args.seed] 
+    offline_y = offline_y_list[config.args.seed]
+    mean_x = mean_x_list[config.args.seed] 
+    mean_y = mean_y_list[config.args.seed] 
+    std_x = std_x_list[config.args.seed] 
+    std_y = std_y_list[config.args.seed] 
     
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
-    # runner.offline_x, runner.mean_offline_x, runner.std_offline_x = offline_x, mean_x, std_x 
-    # runner.offline_y, runner.mean_offline_y, runner.std_offline_y = offline_y, mean_y, std_y 
+    runner.offline_x, runner.mean_offline_x, runner.std_offline_x = offline_x, mean_x, std_x 
+    runner.offline_y, runner.mean_offline_y, runner.std_offline_y = offline_y, mean_y, std_y 
     
     return runner.test(task) 
 
