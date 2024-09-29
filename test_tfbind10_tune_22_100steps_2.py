@@ -82,10 +82,10 @@ def get_offline_data(nconfig):
     mean_y = np.mean(offline_y, axis=0)
     std_y = np.std(offline_y, axis=0)
     
-    # shuffle_idx = np.random.permutation(offline_x.shape[0])
+    shuffle_idx = np.random.permutation(offline_x.shape[0])
 
-    # offline_x = offline_x[shuffle_idx]
-    # offline_y = offline_y[shuffle_idx]
+    offline_x = offline_x[shuffle_idx]
+    offline_y = offline_y[shuffle_idx]
     offline_y = offline_y.reshape(-1)
     
     return torch.from_numpy(offline_x), torch.from_numpy(mean_x), torch.from_numpy(std_x), torch.from_numpy(offline_y), torch.from_numpy(mean_y), torch.from_numpy(std_y)
@@ -131,10 +131,10 @@ def main():
     else:
         nconfig.training.device = [torch.device(f"cuda:{gpu_ids}")]
     
-    wandb.login(key='1cfab558732ccb32d573a7276a337d22b7d8b371')
-    wandb.init(project='BBDM',
-            name='test'+nconfig.wandb_name,
-            config = dconfig) 
+    # wandb.login(key='1cfab558732ccb32d573a7276a337d22b7d8b371')
+    # wandb.init(project='BBDM',
+    #         name='test'+nconfig.wandb_name,
+    #         config = dconfig) 
     
     # df = pd.read_csv('./tuning_results/tune_11/result/tuning_result_dkitty_eta.csv')
     # df = df[df['mean (100th)']>=0.9595]
@@ -143,7 +143,17 @@ def main():
 
     seed_list = range(8)
     # num_fit_samples = 10000
-    
+    best_tf8_hyper = None 
+    for num_fit_samples in [7500,8000,8500,9000,10000,13000,14000,14500,15000,15500,16000,17000]: 
+        best_tf8_hyper1 =  pd.read_csv(f'tuning_results/tune_22_100steps/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples}_lengthscale5.0_sampling_lr0.05_delta0.25.csv')
+        best_tf8_hyper1 = best_tf8_hyper1[best_tf8_hyper1['mean (100th)']>0.97]
+        best_tf8_hyper = pd.concat([best_tf8_hyper,best_tf8_hyper1])
+    best_tf8_hyper = best_tf8_hyper.sort_values(by= 'mean (100th)',ascending= False)
+    best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
+    best_tf8_hyper = np.unique(best_tf8_hyper,axis=0)
+    print(len(best_tf8_hyper))
+    num_candidates = best_tf8_hyper.shape[0] 
+    best_tf8_hyper = best_tf8_hyper[int(1/10*num_candidates):int(2/10*num_candidates)]
     
     if nconfig.task.name != 'TFBind10-Exact-v0':
         task = design_bench.make(nconfig.task.name)
@@ -153,12 +163,6 @@ def main():
     if task.is_discrete: 
         task.map_to_logits()
     
-    best_tf8_hyper =  pd.read_csv(f'tuning_results/tune_20/result/tuning_result_tfbind8_lengthscale6.0_sampling_lr0.05_delta0.25.csv')
-    best_tf8_hyper = best_tf8_hyper[best_tf8_hyper['mean (100th)']>0.97]
-    best_tf8_hyper = best_tf8_hyper.sort_values(by= 'mean (100th)',ascending= False)
-    best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
-    num_candidates = best_tf8_hyper.shape[0] 
-    best_tf8_hyper = best_tf8_hyper[int(1/10*num_candidates):int(2/10*num_candidates)]
         
     global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
     offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list = [],[],[],[],[],[] 
@@ -168,14 +172,14 @@ def main():
         offline_x, mean_x, std_x , offline_y, mean_y , std_y = get_offline_data(nconfig)
         offline_x = (offline_x - mean_x) / std_x
         offline_y = (offline_y - mean_y) / std_y   
-        shuffle_idx = np.random.permutation(offline_x.shape[0])
-        offline_x = offline_x[shuffle_idx]
-        offline_y = offline_y[shuffle_idx]
+        # shuffle_idx = np.random.permutation(offline_x.shape[0])
+        # offline_x = offline_x[shuffle_idx]
+        # offline_y = offline_y[shuffle_idx]
         offline_x = offline_x.to(nconfig.training.device[0])
         offline_y = offline_y.to(nconfig.training.device[0])
-        sorted_indices = torch.argsort(offline_y)[-128:] 
-        offline_x = offline_x[sorted_indices] 
-        offline_y = offline_y[sorted_indices] 
+        # sorted_indices = torch.argsort(offline_y)[-128:] 
+        # offline_x = offline_x[sorted_indices] 
+        # offline_y = offline_y[sorted_indices] 
         
         offline_x_list.append(offline_x) 
         offline_y_list.append(offline_y) 
@@ -189,14 +193,15 @@ def main():
     classifier_free_guidance_prob = 0.15 
     num_fit_samples = nconfig.GP.num_fit_samples
     sampling_lr = 0.05
+    best_tf8_hyper = [[0.5,0.8,-4.0]]
 
-    for lengthscale in [6.0]:
+    for lengthscale in [5.0]:
         for delta in [0.25]: 
 
-            folder_path = './tuning_results/tune_22_100steps/result' 
+            folder_path = './tuning_results/tune_23/result' 
             if not os.path.exists(folder_path): 
                 os.makedirs(folder_path)
-            file_path = f'./tuning_results/tune_22_100steps/result/tuning_result_tfbind10_num_fit_samples{num_fit_samples}_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
+            file_path = f'./tuning_results/tune_23/result/tuning_result_tfbind10_num_fit_samples{num_fit_samples}_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
 
             if not os.path.isfile(file_path):
                 with open(file_path, 'a') as file:
@@ -205,10 +210,9 @@ def main():
                     writer.writerow(header)
             df = pd.read_csv(file_path) 
             tested_parameters = df[['lengthscale','delta','eta','alpha','classifier_free_guidance_weight']].values.tolist()
-                
             for eta, alpha, classifier_free_guidance_weight in best_tf8_hyper: 
-                if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
-                    continue 
+                # if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
+                #     continue 
                 print([lengthscale,delta, eta, alpha, classifier_free_guidance_weight])
                 results_100th = []
                 results_80th = []
@@ -216,7 +220,7 @@ def main():
                 nconfig.model.BB.params.eta = eta 
                 for seed in seed_list:      
                     nconfig.training.classifier_free_guidance_prob = classifier_free_guidance_prob 
-                    cmd = f"grep -Rlw './results/tune_20/TFBind10-Exact-v0/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta{delta}/seed{seed}' -e 'train: true'"
+                    cmd = f"grep -Rlw './results/tune_22_100steps/TFBind10-Exact-v0/num_fit_samples10000/sampling_lr0.05/initial_lengthscale5.0/delta0.25/seed{seed}' -e 'train: true'"
                     result_path = subprocess.check_output(cmd, shell=True, text=True)
                     result_path = result_path.strip()
                     #print(result_path)
@@ -257,6 +261,7 @@ def main():
                 np_result_50th = np.array(results_50th)
                 mean_score_50th = np_result_50th.mean() 
                 std_score_50th = np_result_50th.std()
+                print([eta,alpha,classifier_free_guidance_weight])
                 print(mean_score_100th)
                 
                 with open(file_path, 'a') as file:

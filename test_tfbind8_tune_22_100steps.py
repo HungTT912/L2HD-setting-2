@@ -82,10 +82,10 @@ def get_offline_data(nconfig):
     mean_y = np.mean(offline_y, axis=0)
     std_y = np.std(offline_y, axis=0)
     
-    shuffle_idx = np.random.permutation(offline_x.shape[0])
+    # shuffle_idx = np.random.permutation(offline_x.shape[0])
 
-    offline_x = offline_x[shuffle_idx]
-    offline_y = offline_y[shuffle_idx]
+    # offline_x = offline_x[shuffle_idx]
+    # offline_y = offline_y[shuffle_idx]
     offline_y = offline_y.reshape(-1)
     
     return torch.from_numpy(offline_x), torch.from_numpy(mean_x), torch.from_numpy(std_x), torch.from_numpy(offline_y), torch.from_numpy(mean_y), torch.from_numpy(std_y)
@@ -131,10 +131,10 @@ def main():
     else:
         nconfig.training.device = [torch.device(f"cuda:{gpu_ids}")]
     
-    wandb.login(key='1cfab558732ccb32d573a7276a337d22b7d8b371')
-    wandb.init(project='BBDM',
-               name='test'+nconfig.wandb_name,
-               config = dconfig) 
+    # wandb.login(key='1cfab558732ccb32d573a7276a337d22b7d8b371')
+    # wandb.init(project='BBDM',
+    #            name='test'+nconfig.wandb_name,
+    #            config = dconfig) 
     
     # df = pd.read_csv('./tuning_results/tune_11/result/tuning_result_dkitty_eta.csv')
     # df = df[df['mean (100th)']>=0.9595]
@@ -162,14 +162,15 @@ def main():
         offline_x, mean_x, std_x , offline_y, mean_y , std_y = get_offline_data(nconfig)
         offline_x = (offline_x - mean_x) / std_x
         offline_y = (offline_y - mean_y) / std_y   
-        # shuffle_idx = np.random.permutation(offline_x.shape[0])
+        import pdb ; pdb.set_trace() 
+        shuffle_idx = np.random.permutation(offline_x.shape[0])
         # offline_x = offline_x[shuffle_idx]
         # offline_y = offline_y[shuffle_idx]
         offline_x = offline_x.to(nconfig.training.device[0])
         offline_y = offline_y.to(nconfig.training.device[0])
-        sorted_indices = torch.argsort(offline_y)[-128:] 
-        offline_x = offline_x[sorted_indices] 
-        offline_y = offline_y[sorted_indices] 
+        # sorted_indices = torch.argsort(offline_y)[-128:] 
+        # offline_x = offline_x[sorted_indices] 
+        # offline_y = offline_y[sorted_indices] 
         
         offline_x_list.append(offline_x) 
         offline_y_list.append(offline_y) 
@@ -255,7 +256,7 @@ def main():
                     df = pd.read_csv(file_path)
                     table = wandb.Table(dataframe=df)
                     wandb.log({"data_table": table})
-    wandb.finish()
+    # wandb.finish()
 
 if __name__ == "__main__":
     main()

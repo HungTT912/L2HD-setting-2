@@ -131,10 +131,10 @@ def main():
     else:
         nconfig.training.device = [torch.device(f"cuda:{gpu_ids}")]
     
-    wandb.login(key='1cfab558732ccb32d573a7276a337d22b7d8b371')
-    wandb.init(project='BBDM',
-            name='test'+nconfig.wandb_name,
-            config = dconfig) 
+    # wandb.login(key='1cfab558732ccb32d573a7276a337d22b7d8b371')
+    # wandb.init(project='BBDM',
+    #         name='test'+nconfig.wandb_name,
+    #         config = dconfig) 
     
     # df = pd.read_csv('./tuning_results/tune_11/result/tuning_result_dkitty_eta.csv')
     # df = df[df['mean (100th)']>=0.9595]
@@ -143,7 +143,17 @@ def main():
 
     seed_list = range(8)
     # num_fit_samples = 10000
-    
+    best_tf8_hyper = None 
+    for num_fit_samples in [7500,8000,8500,9000,10000,13000,14000,14500,15000,15500,16000,17000]: 
+        best_tf8_hyper1 =  pd.read_csv(f'tuning_results/tune_22_100steps/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples}_lengthscale5.0_sampling_lr0.05_delta0.25.csv')
+        best_tf8_hyper1 = best_tf8_hyper1[best_tf8_hyper1['mean (100th)']>0.97]
+        best_tf8_hyper = pd.concat([best_tf8_hyper,best_tf8_hyper1])
+    best_tf8_hyper = best_tf8_hyper.sort_values(by= 'mean (100th)',ascending= False)
+    best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
+    best_tf8_hyper = np.unique(best_tf8_hyper,axis=0)
+    print(len(best_tf8_hyper))
+    num_candidates = best_tf8_hyper.shape[0] 
+    best_tf8_hyper = best_tf8_hyper[int(3/10*num_candidates):int(4/10*num_candidates)]
     
     if nconfig.task.name != 'TFBind10-Exact-v0':
         task = design_bench.make(nconfig.task.name)
@@ -153,12 +163,6 @@ def main():
     if task.is_discrete: 
         task.map_to_logits()
     
-    # best_tf8_hyper =  pd.read_csv(f'tuning_results/tune_20/result/tuning_result_tfbind8_lengthscale6.0_sampling_lr0.05_delta0.25.csv')
-    # best_tf8_hyper = best_tf8_hyper[best_tf8_hyper['mean (100th)']>0.97]
-    # best_tf8_hyper = best_tf8_hyper.sort_values(by= 'mean (100th)',ascending= False)
-    # best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
-    # num_candidates = best_tf8_hyper.shape[0] 
-    # best_tf8_hyper = best_tf8_hyper[int(4/10*num_candidates):int(5/10*num_candidates)]
         
     global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
     offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list = [],[],[],[],[],[] 
@@ -173,9 +177,9 @@ def main():
         # offline_y = offline_y[shuffle_idx]
         offline_x = offline_x.to(nconfig.training.device[0])
         offline_y = offline_y.to(nconfig.training.device[0])
-        sorted_indices = torch.argsort(offline_y)[-128:] 
-        offline_x = offline_x[sorted_indices] 
-        offline_y = offline_y[sorted_indices] 
+        # sorted_indices = torch.argsort(offline_y)[-128:] 
+        # offline_x = offline_x[sorted_indices] 
+        # offline_y = offline_y[sorted_indices] 
         
         offline_x_list.append(offline_x) 
         offline_y_list.append(offline_y) 
