@@ -151,7 +151,7 @@ def main():
     best_tf8_hyper = best_tf8_hyper.sort_values(by= 'mean (100th)',ascending= False)
     best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
     best_tf8_hyper = np.unique(best_tf8_hyper,axis=0)
-    print(len(best_tf8_hyper))
+    # print(len(best_tf8_hyper))
     num_candidates = best_tf8_hyper.shape[0] 
     best_tf8_hyper = best_tf8_hyper[int(9/10*num_candidates):]
     
@@ -193,7 +193,7 @@ def main():
     classifier_free_guidance_prob = 0.15 
     num_fit_samples = nconfig.GP.num_fit_samples
     sampling_lr = 0.05
-    best_tf8_hyper = [[0.5,0.8,-4.0]]
+    # best_tf8_hyper = [[0.5,0.8,-4.0]]
 
     for lengthscale in [5.0]:
         for delta in [0.25]: 

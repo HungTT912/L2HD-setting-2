@@ -193,7 +193,7 @@ def main():
     classifier_free_guidance_prob = 0.15 
     num_fit_samples = nconfig.GP.num_fit_samples
     sampling_lr = 0.05
-    best_tf8_hyper = [[0.5,0.8,-4.0]]
+    # best_tf8_hyper = [[0.5,0.8,-4.0]]
 
     for lengthscale in [5.0]:
         for delta in [0.25]: 
