@@ -82,10 +82,10 @@ def get_offline_data(nconfig):
     mean_y = np.mean(offline_y, axis=0)
     std_y = np.std(offline_y, axis=0)
     
-    # shuffle_idx = np.random.permutation(offline_x.shape[0])
+    shuffle_idx = np.random.permutation(offline_x.shape[0])
 
-    # offline_x = offline_x[shuffle_idx]
-    # offline_y = offline_y[shuffle_idx]
+    offline_x = offline_x[shuffle_idx]
+    offline_y = offline_y[shuffle_idx]
     offline_y = offline_y.reshape(-1)
     
     return torch.from_numpy(offline_x), torch.from_numpy(mean_x), torch.from_numpy(std_x), torch.from_numpy(offline_y), torch.from_numpy(mean_y), torch.from_numpy(std_y)
@@ -168,14 +168,14 @@ def main():
         offline_x, mean_x, std_x , offline_y, mean_y , std_y = get_offline_data(nconfig)
         offline_x = (offline_x - mean_x) / std_x
         offline_y = (offline_y - mean_y) / std_y   
-        shuffle_idx = np.random.permutation(offline_x.shape[0])
-        offline_x = offline_x[shuffle_idx]
-        offline_y = offline_y[shuffle_idx]
+        # shuffle_idx = np.random.permutation(offline_x.shape[0])
+        # offline_x = offline_x[shuffle_idx]
+        # offline_y = offline_y[shuffle_idx]
         offline_x = offline_x.to(nconfig.training.device[0])
         offline_y = offline_y.to(nconfig.training.device[0])
-        sorted_indices = torch.argsort(offline_y)[-128:] 
-        offline_x = offline_x[sorted_indices] 
-        offline_y = offline_y[sorted_indices] 
+        # sorted_indices = torch.argsort(offline_y)[-128:] 
+        # offline_x = offline_x[sorted_indices] 
+        # offline_y = offline_y[sorted_indices] 
         
         offline_x_list.append(offline_x) 
         offline_y_list.append(offline_y) 
