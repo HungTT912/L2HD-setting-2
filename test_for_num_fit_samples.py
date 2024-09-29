@@ -146,11 +146,11 @@ def main():
     model_load_path_list = [] 
     optim_sche_load_path_list = []
     nconfig.args.train = False   
-    alpha = 0.8 
-    eta = 0.5 if task.is_discrete else 0.05
-    classifier_free_guidance_weight = -4 if task.is_discrete else -1.5
-    lengthscale = 5.0 if task.is_discrete else 1.0 
-    sampling_lr = 0.05 if task.is_discrete else 0.001
+    # alpha = 0.8 
+    # eta = 0.5 if task.is_discrete else 0.05
+    # classifier_free_guidance_weight = -4 if task.is_discrete else -1.5
+    # lengthscale = 5.0 if task.is_discrete else 1.0 
+    # sampling_lr = 0.05 if task.is_discrete else 0.001
     
     task_to_path ={
         'AntMorphology-Exact-v0': 'results/tune_20/AntMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25',
@@ -199,6 +199,7 @@ def main():
                 optim_sche_load_path = folder_path+f'/seed{seed}/BrownianBridge/checkpoint/top_optim_sche_epoch_100.pth'
                 nconfig.model.model_load_path = model_load_path
                 nconfig.model.optim_sche_load_path = optim_sche_load_path
+                nconfig.args.train = False 
                 result = tester(nconfig,task)
                 print("Score : ",result[0]) 
                 results_100th.append(result[0])
@@ -213,13 +214,14 @@ def main():
             np_result_50th = np.array(results_50th)
             mean_score_50th = np_result_50th.mean() 
             std_score_50th = np_result_50th.std()
+            print([eta,alpha, w])
             print(nconfig.task.name)
             print(f'num_fit_samples : {num_fit_samples}')
             print(mean_score_100th, std_score_100th)
             print(mean_score_80th, std_score_80th)
             print(mean_score_50th, std_score_50th)
         
-    nconfig.args.train = False 
+    
     wandb.finish() 
     
 if __name__ == "__main__":

@@ -10,8 +10,8 @@ import csv
 import subprocess 
 from utils import dict2namespace, get_runner, namespace2dict
 import design_bench
-import time 
 import wandb 
+import time 
 
 def parse_args_and_config():
     parser = argparse.ArgumentParser(description=globals()['__doc__'])
@@ -63,6 +63,33 @@ def set_random_seed(SEED=1234):
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
 
+def get_offline_data(nconfig):
+    if nconfig.task.name != 'TFBind10-Exact-v0':
+        task = design_bench.make(nconfig.task.name)
+    else:
+        task = design_bench.make(nconfig.task.name,
+                                dataset_kwargs={"max_samples": 10000})
+
+    offline_x = task.x
+    if task.is_discrete:
+        offline_x = task.to_logits(offline_x).reshape(offline_x.shape[0], -1)
+
+    mean_x = np.mean(offline_x, axis=0)
+    std_x = np.std(offline_x, axis=0)
+    std_x = np.where(std_x == 0, 1.0, std_x)
+    
+    offline_y = task.y
+    mean_y = np.mean(offline_y, axis=0)
+    std_y = np.std(offline_y, axis=0)
+    
+    # shuffle_idx = np.random.permutation(offline_x.shape[0])
+
+    # offline_x = offline_x[shuffle_idx]
+    # offline_y = offline_y[shuffle_idx]
+    offline_y = offline_y.reshape(-1)
+    
+    return torch.from_numpy(offline_x), torch.from_numpy(mean_x), torch.from_numpy(std_x), torch.from_numpy(offline_y), torch.from_numpy(mean_y), torch.from_numpy(std_y)
+
 
 def CPU_singleGPU_launcher(config):
     set_random_seed(config.args.seed)
@@ -74,32 +101,86 @@ def CPU_singleGPU_launcher(config):
             runner.test()
     return
 
+
 def trainer(config): 
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
     return runner.train()
 def tester(config, task):
+    global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
+    offline_x = offline_x_list[config.args.seed] 
+    offline_y = offline_y_list[config.args.seed]
+    mean_x = mean_x_list[config.args.seed] 
+    mean_y = mean_y_list[config.args.seed] 
+    std_x = std_x_list[config.args.seed] 
+    std_y = std_y_list[config.args.seed] 
+    
     set_random_seed(config.args.seed)
     runner = get_runner(config.runner, config)
+    runner.offline_x, runner.mean_offline_x, runner.std_offline_x = offline_x, mean_x, std_x 
+    runner.offline_y, runner.mean_offline_y, runner.std_offline_y = offline_y, mean_y, std_y 
+    
     return runner.test(task) 
+
 
 def main():
     nconfig, dconfig = parse_args_and_config()
+    wandb.init(project='BBDM',
+            name='test'+nconfig.wandb_name,
+            config = dconfig) 
     args = nconfig.args
     gpu_ids = args.gpu_ids
     if gpu_ids == "-1": # Use CPU
         nconfig.training.device = [torch.device("cpu")]
     else:
         nconfig.training.device = [torch.device(f"cuda:{gpu_ids}")]
+    if nconfig.task.name != 'TFBind10-Exact-v0':
+        task = design_bench.make(nconfig.task.name)
+    else:
+        task = design_bench.make(nconfig.task.name,
+                                dataset_kwargs={"max_samples": 10000})
+    if task.is_discrete: 
+        task.map_to_logits()
+        
+    seed_list = range(8)
+    model_load_path_list = [] 
+    optim_sche_load_path_list = []
+    nconfig.args.train = False   
+    # alpha = 0.8 
+    # eta = 0.5 if task.is_discrete else 0.05
+    # classifier_free_guidance_weight = -4 if task.is_discrete else -1.5
+    # lengthscale = 5.0 if task.is_discrete else 1.0 
+    # sampling_lr = 0.05 if task.is_discrete else 0.001
     
-    wandb.init(project='BBDM',
-               name='test'+nconfig.wandb_name,
-               config = dconfig) 
-    
-    # df = pd.read_csv('./tuning_results/tune_11/result/tuning_result_dkitty_eta.csv')
-    # df = df[df['mean (100th)']>=0.9595]
-    # print(len(df))
-    # hyper_parameter_list= df[['eta','alpha','classifier_free_guidance_weight']].to_numpy()
+    task_to_path ={
+        'AntMorphology-Exact-v0': 'results/tune_20/AntMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25',
+        'DKittyMorphology-Exact-v0': 'results/tune_20/DKittyMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25',
+        'TFBind8-Exact-v0': 'results/tune_22_100steps/TFBind8-Exact-v0/num_fit_samples15500/sampling_lr0.05/initial_lengthscale5.0/delta0.25',
+        'TFBind10-Exact-v0' : 'results/tune_22_100steps/TFBind10-Exact-v0/num_fit_samples10000/sampling_lr0.05/initial_lengthscale5.0/delta0.25'
+    }
+    global offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list 
+    offline_x_list, mean_x_list, std_x_list, offline_y_list, mean_y_list, std_y_list = [],[],[],[],[],[] 
+    for seed in seed_list : 
+        global offline_x, mean_x, std_x, offline_y, mean_y, std_y 
+        set_random_seed(seed)
+        offline_x, mean_x, std_x , offline_y, mean_y , std_y = get_offline_data(nconfig)
+        offline_x = (offline_x - mean_x) / std_x
+        offline_y = (offline_y - mean_y) / std_y   
+        shuffle_idx = np.random.permutation(offline_x.shape[0])
+        offline_x = offline_x[shuffle_idx]
+        offline_y = offline_y[shuffle_idx]
+        offline_x = offline_x.to(nconfig.training.device[0])
+        offline_y = offline_y.to(nconfig.training.device[0])
+        sorted_indices = torch.argsort(offline_y)[-128:] 
+        offline_x = offline_x[sorted_indices] 
+        offline_y = offline_y[sorted_indices] 
+        
+        offline_x_list.append(offline_x) 
+        offline_y_list.append(offline_y) 
+        mean_x_list.append(mean_x) 
+        std_x_list.append(std_x) 
+        mean_y_list.append(mean_y)
+        std_y_list.append(std_y) 
 
     seed_list = range(8)
     num_fit_samples = 10000
@@ -113,15 +194,15 @@ def main():
     if task.is_discrete: 
         task.map_to_logits()
     classifier_free_guidance_prob = 0.15 
-    plot_time = 20 
+    plot_time = 2
     sampling_lr = 0.05
     for lengthscale in [6.0]:
         for delta in [0.25]: 
 
-            folder_path = './tuning_results/tune_20/result' 
+            folder_path = './tuning_results/tune_23/result' 
             if not os.path.exists(folder_path): 
                 os.makedirs(folder_path)
-            file_path = f'./tuning_results/tune_20/result/tuning_result_tfbind8_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
+            file_path = f'./tuning_results/tune_23/result/tuning_result_tfbind8_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
     
             if not os.path.isfile(file_path):
                 with open(file_path, 'a') as file:
@@ -193,7 +274,7 @@ def main():
                                 df = pd.read_csv(file_path)
                                 table = wandb.Table(dataframe=df)
                                 wandb.log({"data_table": table})
-                                plot_time = 20 
+                                plot_time = 2
                             
 
     wandb.finish()
