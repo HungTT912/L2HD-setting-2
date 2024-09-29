@@ -186,77 +186,78 @@ def main():
     for lengthscale in [5.0]:
         for delta in [0.25]: 
 
-            folder_path = './tuning_results/tune_23_100steps/result' 
+            folder_path = './tuning_results/tune_23/result' 
             if not os.path.exists(folder_path): 
                 os.makedirs(folder_path)
-            file_path = f'./tuning_results/tune_23_100steps/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples}_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
+            file_path = f'./tuning_results/tune_23/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples}_lengthscale{lengthscale}_sampling_lr{sampling_lr}_delta{delta}.csv'
 
             if not os.path.isfile(file_path):
                 with open(file_path, 'a') as file:
-                    header = ['sampling_lr','lengthscale','delta', 'eta','alpha','classifier_free_guidance_weight', 'mean (100th)', 'std (100th)', 'mean (80th)', 'std (80th)', 'mean (50th)', 'std (50th)']
+                    header = ['num_fit_samples','sampling_lr','lengthscale','delta', 'eta','alpha','classifier_free_guidance_weight', 'mean (100th)', 'std (100th)', 'mean (80th)', 'std (80th)', 'mean (50th)', 'std (50th)']
                     writer = csv.writer(file)
                     writer.writerow(header)
             df = pd.read_csv(file_path) 
-            tested_parameters = df[['lengthscale','delta','eta','alpha','classifier_free_guidance_weight']].values.tolist()
+            # tested_parameters = df[['lengthscale','delta','eta','alpha','classifier_free_guidance_weight']].values.tolist()
             hyper =[[0.3,0.9,-1.5],[0.3,0.95,-1.5]]
-            for eta, alpha, classifier_free_guidance_weight in hyper: 
-                # if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
-                #     continue 
-                print([lengthscale,delta, eta, alpha, classifier_free_guidance_weight])
-                results_100th = []
-                results_80th = []
-                results_50th = []
-                nconfig.model.BB.params.eta = eta 
-                for seed in seed_list:      
-                    nconfig.training.classifier_free_guidance_prob = classifier_free_guidance_prob 
-                    cmd = f"grep -Rlw './results/tune_22_100steps/TFBind8-Exact-v0/num_fit_samples{num_fit_samples}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta{delta}/seed{seed}' -e 'train: true'"
-                    result_path = subprocess.check_output(cmd, shell=True, text=True)
-                    result_path = result_path.strip()
-                    #print(result_path)
-                    cmd = 'find ' + result_path[:-12]+ " -name 'top_model*'"
-                    model_load_path = subprocess.check_output(cmd, shell = True, text= True) 
-                    model_load_path = model_load_path.strip() 
-                    cmd = 'find ' + result_path[:-12]+ " -name 'top_optim*'"
-                    optim_sche_load_path = subprocess.check_output(cmd, shell = True, text= True) 
-                    optim_sche_load_path = optim_sche_load_path.strip()
-                    print(model_load_path)
-                    nconfig.args.train = False 
-                
-                    nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
-                    nconfig.testing.alpha = alpha
-                    nconfig.model.model_load_path = model_load_path
-                    nconfig.model.optim_sche_load_path = optim_sche_load_path
-                    nconfig.args.seed = seed
-                    result = tester(nconfig, task)
-                    print("Score : ",result[0]) 
-                    results_100th.append(result[0])
-                    results_80th.append(result[1]) 
-                    results_50th.append(result[2]) 
-                
-                assert len(results_100th) == 8 
-                assert nconfig.GP.sampling_from_GP_lr == sampling_lr 
-                assert nconfig.GP.delta_lengthscale == delta 
-                assert nconfig.GP.initial_lengthscale == lengthscale 
-                
-                np_result_100th = np.array(results_100th)
-                mean_score_100th = np_result_100th.mean() 
-                std_score_100th = np_result_100th.std()
-                np_result_80th = np.array(results_80th)
-                mean_score_80th = np_result_80th.mean() 
-                std_score_80th = np_result_80th.std()
-                np_result_50th = np.array(results_50th)
-                mean_score_50th = np_result_50th.mean() 
-                std_score_50th = np_result_50th.std()
-                print([eta,alpha, classifier_free_guidance_weight])
-                print(mean_score_100th)
-                
-                with open(file_path, 'a') as file:
-                    new_row = [sampling_lr,lengthscale,delta, eta, alpha, classifier_free_guidance_weight, mean_score_100th, std_score_100th, mean_score_80th, std_score_80th, mean_score_50th, std_score_50th]
-                    writer = csv.writer(file)
-                    writer.writerow(new_row)
-                    df = pd.read_csv(file_path)
-                    table = wandb.Table(dataframe=df)
-                    wandb.log({"data_table": table})
+            for num_fit_samples in [2500,5000, 7500, 8000, 8500, 9000, 10000, 13000, 14000, 14500, 15000, 15500, 16000, 17000]: 
+                for eta, alpha, classifier_free_guidance_weight in hyper: 
+                    # if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
+                    #     continue 
+                    print([lengthscale,delta, eta, alpha, classifier_free_guidance_weight])
+                    results_100th = []
+                    results_80th = []
+                    results_50th = []
+                    nconfig.model.BB.params.eta = eta 
+                    for seed in seed_list:      
+                        nconfig.training.classifier_free_guidance_prob = classifier_free_guidance_prob 
+                        cmd = f"grep -Rlw './results/tune_22_100steps/TFBind8-Exact-v0/num_fit_samples{num_fit_samples}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta{delta}/seed{seed}' -e 'train: true'"
+                        result_path = subprocess.check_output(cmd, shell=True, text=True)
+                        result_path = result_path.strip()
+                        #print(result_path)
+                        cmd = 'find ' + result_path[:-12]+ " -name 'top_model*'"
+                        model_load_path = subprocess.check_output(cmd, shell = True, text= True) 
+                        model_load_path = model_load_path.strip() 
+                        cmd = 'find ' + result_path[:-12]+ " -name 'top_optim*'"
+                        optim_sche_load_path = subprocess.check_output(cmd, shell = True, text= True) 
+                        optim_sche_load_path = optim_sche_load_path.strip()
+                        print(model_load_path)
+                        nconfig.args.train = False 
+                    
+                        nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
+                        nconfig.testing.alpha = alpha
+                        nconfig.model.model_load_path = model_load_path
+                        nconfig.model.optim_sche_load_path = optim_sche_load_path
+                        nconfig.args.seed = seed
+                        result = tester(nconfig, task)
+                        print("Score : ",result[0]) 
+                        results_100th.append(result[0])
+                        results_80th.append(result[1]) 
+                        results_50th.append(result[2]) 
+                    
+                    assert len(results_100th) == 8 
+                    assert nconfig.GP.sampling_from_GP_lr == sampling_lr 
+                    assert nconfig.GP.delta_lengthscale == delta 
+                    assert nconfig.GP.initial_lengthscale == lengthscale 
+                    
+                    np_result_100th = np.array(results_100th)
+                    mean_score_100th = np_result_100th.mean() 
+                    std_score_100th = np_result_100th.std()
+                    np_result_80th = np.array(results_80th)
+                    mean_score_80th = np_result_80th.mean() 
+                    std_score_80th = np_result_80th.std()
+                    np_result_50th = np.array(results_50th)
+                    mean_score_50th = np_result_50th.mean() 
+                    std_score_50th = np_result_50th.std()
+                    print([eta,alpha, classifier_free_guidance_weight])
+                    print(mean_score_100th)
+                    
+                    with open(file_path, 'a') as file:
+                        new_row = [num_fit_samples,sampling_lr,lengthscale,delta, eta, alpha, classifier_free_guidance_weight, mean_score_100th, std_score_100th, mean_score_80th, std_score_80th, mean_score_50th, std_score_50th]
+                        writer = csv.writer(file)
+                        writer.writerow(new_row)
+                        df = pd.read_csv(file_path)
+                        table = wandb.Table(dataframe=df)
+                        wandb.log({"data_table": table})
     wandb.finish()
 
 if __name__ == "__main__":
