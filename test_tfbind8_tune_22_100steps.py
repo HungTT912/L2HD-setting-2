@@ -198,7 +198,7 @@ def main():
                     writer.writerow(header)
             df = pd.read_csv(file_path) 
             tested_parameters = df[['lengthscale','delta','eta','alpha','classifier_free_guidance_weight']].values.tolist()
-            hyper =[[0.5,0.80,-4.0]]
+            hyper =[[0.3,0.9,-1.5],[0.3,0.95,-1.5]]
             for eta, alpha, classifier_free_guidance_weight in hyper: 
                 # if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
                 #     continue 
