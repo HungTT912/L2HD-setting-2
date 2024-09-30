@@ -102,9 +102,12 @@ def main():
     for seed in seed_list:
         nconfig.args.train = True 
         nconfig.args.seed = seed 
-        nconfig.testing.alpha = 0.95 
-        nconfig.testing.classifier_free_guidance_weight = -1.5 
-        nconfig.testing.eta = 0.3
+        alpha = 0.95
+        eta = 0.3 if task.is_discrete else 0.0
+        classifier_free_guidance_weight = -1.5
+        nconfig.testing.alpha = alpha 
+        nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
+        nconfig.testing.eta = eta 
         model_load_path, optim_sche_load_path = trainer(nconfig)
         model_load_path_list.append(model_load_path) 
         optim_sche_load_path_list.append(optim_sche_load_path)

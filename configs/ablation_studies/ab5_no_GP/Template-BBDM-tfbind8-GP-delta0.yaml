@@ -10,7 +10,7 @@ GP:
   sampling_from_GP_lr: 0.05
   threshold_diff: 0.001
   type_of_initial_points: highest
-  num_fit_samples : 15500
+  num_fit_samples : 17000
 model:
   BB:
     lr_scheduler:

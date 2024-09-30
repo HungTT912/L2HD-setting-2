@@ -107,9 +107,9 @@ def main():
     model_load_path_list = [] 
     optim_sche_load_path_list = []
     nconfig.args.train = False   
-    alpha = 0.8 
-    eta = 0.5 if task.is_discrete else 0.05
-    classifier_free_guidance_weight = -4 if task.is_discrete else -1.5
+    alpha = 0.95 
+    eta = 0.0 if task.is_discrete else 0.0
+    classifier_free_guidance_weight = -1.5 
     lengthscale = 5.0 if task.is_discrete else 1.0 
     sampling_lr = 0.05 if task.is_discrete else 0.001
     

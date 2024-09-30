@@ -107,14 +107,14 @@ def main():
     model_load_path_list = [] 
     optim_sche_load_path_list = []
     nconfig.args.train = False   
-    alpha = 0.8 
-    eta = 0.5 if task.is_discrete else 0.05
-    classifier_free_guidance_weight = -4 if task.is_discrete else -1.5
+    alpha = 0.95
+    eta = 0.3 if task.is_discrete else 0.0
+    classifier_free_guidance_weight = -1.5
     
     nconfig.testing.eta = eta 
     nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
     nconfig.testing.alpha = alpha
-    for type_points in ['lowest','random'] :
+    for type_points in ['lowest','random','highest'] :
         folder_path = f'results/ablation_studies/ab2/{type_points}/AntMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25'
         results_100th = [] 
         results_80th = [] 
