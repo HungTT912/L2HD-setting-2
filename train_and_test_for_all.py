@@ -102,6 +102,9 @@ def main():
     for seed in seed_list:
         nconfig.args.train = True 
         nconfig.args.seed = seed 
+        nconfig.testing.alpha = 0.95 
+        nconfig.testing.classifier_free_guidance_weight = -1.5 
+        nconfig.testing.eta = 0.3
         model_load_path, optim_sche_load_path = trainer(nconfig)
         model_load_path_list.append(model_load_path) 
         optim_sche_load_path_list.append(optim_sche_load_path)

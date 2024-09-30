@@ -1,4 +1,8 @@
-python3 test_tfbind10_tune_22_100steps_slow.py --config configs/tune_22_100steps/Template-BBDM-tfbind10-s10000-l5.0-lr0.05-d0.25.yaml \
-&python3 test_tfbind8_tune_22_100steps.py --config configs/tune_22_100steps/Template-BBDM-tfbind8-s14000-l5.0-lr0.05-d0.25.yaml \
-&python3 test_ant_tune_22_100steps.py --config configs/tune_20/Template-BBDM-ant-l1.0-lr0.001-d0.25.yaml \
-&python3 test_dkitty_tune_22_100steps.py --config configs/tune_20/Template-BBDM-dkitty-l1.0-lr0.001-d0.25.yaml
+python3 train_and_test_for_all.py --config configs/ablation_studies/ab1_GP_num_of_initial_points/Template-BBDM-tfbind8-num_points_128.yaml --save_top \
+&python3 train_and_test_for_all.py --config configs/ablation_studies/ab1_GP_num_of_initial_points/Template-BBDM-tfbind8-num_points_256.yaml --save_top \
+
+python3 train_and_test_for_all.py --config configs/ablation_studies/ab1_GP_num_of_initial_points/Template-BBDM-tfbind8-num_points_512.yaml --save_top \
+&python3 train_and_test_for_all.py --config configs/ablation_studies/ab3_GP_num_gradient_steps/Template-BBDM-tfbind8-grads_25.yaml --save_top 
+
+python3 train_and_test_for_all.py --config configs/ablation_studies/ab3_GP_num_gradient_steps/Template-BBDM-tfbind8-grads_50.yaml --save_top \
+&python3 train_and_test_for_all.py --config configs/ablation_studies/ab3_GP_num_gradient_steps/Template-BBDM-tfbind8-grads_75.yaml --save_top \
