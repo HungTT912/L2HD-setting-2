@@ -4,7 +4,7 @@
 #SBATCH --error=log_slurm/error_cuongdm_2.txt        # Error file
 #SBATCH --ntasks=1               # Number of tasks (processes)
 #SBATCH --gpus=1                 # Number of GPUs per node
-#SBATCH --cpus-per-task=20                             # Number of CPU cores per task
+#SBATCH --cpus-per-task=40                             # Number of CPU cores per task
 sh ./test-bash-2.sh
 
 
