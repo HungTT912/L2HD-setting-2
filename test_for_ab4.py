@@ -113,7 +113,7 @@ def main():
     lengthscale = 5.0 if task.is_discrete else 1.0 
     sampling_lr = 0.05 if task.is_discrete else 0.001
     
-    nconfig.testing.eta = eta 
+    nconfig.model.BB.params.eta = eta  
     nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
     nconfig.testing.alpha = alpha
     task_to_path ={

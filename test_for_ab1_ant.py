@@ -111,7 +111,7 @@ def main():
     eta = 0.3 if task.is_discrete else 0.0
     classifier_free_guidance_weight = -1.5
     
-    nconfig.testing.eta = eta 
+    nconfig.model.BB.params.eta = eta 
     nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
     nconfig.testing.alpha = alpha
     
