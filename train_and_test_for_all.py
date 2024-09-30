@@ -102,7 +102,7 @@ def main():
                                 dataset_kwargs={"max_samples": 10000})
     if task.is_discrete: 
         task.map_to_logits()
-    seed_list = range(7,8)
+    seed_list = range(8)
     model_load_path_list = [] 
     optim_sche_load_path_list = []
     for seed in seed_list:
