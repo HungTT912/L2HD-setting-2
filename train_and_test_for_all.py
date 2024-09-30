@@ -95,7 +95,13 @@ def main():
         nconfig.training.device = [torch.device("cpu")]
     else:
         nconfig.training.device = [torch.device(f"cuda:{gpu_ids}")]
-    
+    if nconfig.task.name != 'TFBind10-Exact-v0':
+        task = design_bench.make(nconfig.task.name)
+    else:
+        task = design_bench.make(nconfig.task.name,
+                                dataset_kwargs={"max_samples": 10000})
+    if task.is_discrete: 
+        task.map_to_logits()
     seed_list = range(8)
     model_load_path_list = [] 
     optim_sche_load_path_list = []
@@ -112,13 +118,7 @@ def main():
         model_load_path_list.append(model_load_path) 
         optim_sche_load_path_list.append(optim_sche_load_path)
     
-    if nconfig.task.name != 'TFBind10-Exact-v0':
-        task = design_bench.make(nconfig.task.name)
-    else:
-        task = design_bench.make(nconfig.task.name,
-                                dataset_kwargs={"max_samples": 10000})
-    if task.is_discrete: 
-        task.map_to_logits()
+
     results_100th = []
     results_80th = [] 
     results_50th = []
