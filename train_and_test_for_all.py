@@ -102,7 +102,7 @@ def main():
                                 dataset_kwargs={"max_samples": 10000})
     if task.is_discrete: 
         task.map_to_logits()
-    seed_list = range(8)
+    seed_list = range(7,8)
     model_load_path_list = [] 
     optim_sche_load_path_list = []
     for seed in seed_list:
@@ -113,12 +113,12 @@ def main():
         classifier_free_guidance_weight = -1.5
         nconfig.testing.alpha = alpha 
         nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
-        nconfig.testing.eta = eta 
+        nconfig.model.BB.params.eta = eta 
         model_load_path, optim_sche_load_path = trainer(nconfig)
         model_load_path_list.append(model_load_path) 
         optim_sche_load_path_list.append(optim_sche_load_path)
     
-
+    seed_list = range(8)
     results_100th = []
     results_80th = [] 
     results_50th = []
