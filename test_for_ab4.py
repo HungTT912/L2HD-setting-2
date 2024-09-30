@@ -107,9 +107,9 @@ def main():
     model_load_path_list = [] 
     optim_sche_load_path_list = []
     nconfig.args.train = False   
-    alpha = 0.95 
-    eta = 0.0 if task.is_discrete else 0.0
-    classifier_free_guidance_weight = -1.5 
+    alpha = 0.95
+    eta = 0.3 if task.is_discrete else 0.0
+    classifier_free_guidance_weight = -1.5
     lengthscale = 5.0 if task.is_discrete else 1.0 
     sampling_lr = 0.05 if task.is_discrete else 0.001
     
@@ -119,10 +119,10 @@ def main():
     task_to_path ={
         'AntMorphology-Exact-v0': 'results/tune_20/AntMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25',
         'DKittyMorphology-Exact-v0': 'results/tune_20/DKittyMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25',
-        'TFBind8-Exact-v0': 'results/tune_22_100steps/TFBind8-Exact-v0/num_fit_samples15500/sampling_lr0.05/initial_lengthscale5.0/delta0.25',
+        'TFBind8-Exact-v0': 'results/tune_22_100steps/TFBind8-Exact-v0/num_fit_samples17000/sampling_lr0.05/initial_lengthscale5.0/delta0.25',
         'TFBind10-Exact-v0' : 'results/tune_22_100steps/TFBind10-Exact-v0/num_fit_samples10000/sampling_lr0.05/initial_lengthscale5.0/delta0.25'
     }
-    for type_conditioning in ['highest'] :
+    for type_conditioning in ['highest','high','random'] :
         folder_path = task_to_path[nconfig.task.name]
         results_100th = [] 
         results_80th = [] 

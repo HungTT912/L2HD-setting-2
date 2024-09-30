@@ -116,7 +116,7 @@ def main():
     nconfig.testing.eta = eta 
     nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
     nconfig.testing.alpha = alpha
-    for grads in [25,50,75,100] :
+    for grads in [25,50,75] :
         folder_path = f'results/ablation_studies/ab3/grads_{grads}/{nconfig.task.name}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta0.25'
         results_100th = [] 
         results_80th = [] 

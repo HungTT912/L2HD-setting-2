@@ -114,7 +114,7 @@ def main():
     nconfig.testing.eta = eta 
     nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
     nconfig.testing.alpha = alpha
-    for type_points in ['lowest','random','highest'] :
+    for type_points in ['lowest','random'] :
         folder_path = f'results/ablation_studies/ab2/{type_points}/AntMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25'
         results_100th = [] 
         results_80th = [] 
