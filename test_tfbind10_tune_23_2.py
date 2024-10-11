@@ -118,7 +118,7 @@ def main():
     best_tf8_hyper = None 
     for num_fit_samples in num_fit_samples_list: 
         best_tf8_hyper1 =  pd.read_csv(f'tuning_results/tune_23/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples}_lengthscale6.0_sampling_lr0.05_delta0.25.csv')
-        best_tf8_hyper1 = best_tf8_hyper1[best_tf8_hyper1['mean (100th)']>0.97]
+        best_tf8_hyper1 = best_tf8_hyper1[best_tf8_hyper1['mean (100th)']>98]
         best_tf8_hyper = pd.concat([best_tf8_hyper,best_tf8_hyper1])
     best_tf8_hyper = best_tf8_hyper.sort_values(by= 'mean (100th)',ascending= False)
     best_tf8_hyper = best_tf8_hyper[['eta', 'alpha', 'classifier_free_guidance_weight']].to_numpy()
@@ -154,7 +154,7 @@ def main():
                 nconfig.model.BB.params.eta = eta 
                 for seed in seed_list:      
                     nconfig.training.classifier_free_guidance_prob = classifier_free_guidance_prob 
-                    cmd = f"grep -Rlw 'results/tune_20/TFBind10-Exact-v0/sampling_lr0.05/initial_lengthscale6.0/delta0.25' -e 'train: true'"
+                    cmd = f"grep -Rlw 'results/tune_20/TFBind10-Exact-v0/sampling_lr0.05/initial_lengthscale6.0/delta0.25/seed{seed}' -e 'train: true'"
                     result_path = subprocess.check_output(cmd, shell=True, text=True)
                     result_path = result_path.strip()
                     #print(result_path)
