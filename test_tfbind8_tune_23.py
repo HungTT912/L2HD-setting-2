@@ -116,7 +116,7 @@ def main():
     classifier_free_guidance_prob = 0.15 
     num_fit_samples = nconfig.GP.num_fit_samples
     sampling_lr = 0.05
-    for lengthscale in [6.0]:
+    for lengthscale in [5.5]:
         for delta in [0.25]: 
 
             folder_path = './tuning_results/tune_23/result' 

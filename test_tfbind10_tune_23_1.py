@@ -177,7 +177,7 @@ def main():
     num_fit_samples_list = [5000,7500,8000,8500,9000,10000,12000,13000,14000,15000,16000,17000,18000] 
     best_tf8_hyper = None 
     for num_fit_samples in num_fit_samples_list: 
-        best_tf8_hyper1 =  pd.read_csv(f'tuning_results/tune_23/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples}_lengthscale6.0_sampling_lr0.05_delta0.25.csv')
+        best_tf8_hyper1 =  pd.read_csv(f'tuning_results/tune_23/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples}_lengthscale5.5_sampling_lr0.05_delta0.25.csv')
         best_tf8_hyper1 = best_tf8_hyper1[best_tf8_hyper1['mean (100th)']>0.98]
         best_tf8_hyper = pd.concat([best_tf8_hyper,best_tf8_hyper1])
     best_tf8_hyper = best_tf8_hyper.sort_values(by= 'mean (100th)',ascending= False)
@@ -188,7 +188,7 @@ def main():
     best_tf8_hyper = best_tf8_hyper[int(num_candidates/5): int(2*num_candidates/5)] 
 
     sampling_lr = 0.05
-    for lengthscale in [6.0]:
+    for lengthscale in [5.5]:
         for delta in [0.25]: 
 
             folder_path = './tuning_results/tune_23/result' 
@@ -214,7 +214,7 @@ def main():
                 nconfig.model.BB.params.eta = eta 
                 for seed in seed_list:      
                     nconfig.training.classifier_free_guidance_prob = classifier_free_guidance_prob 
-                    cmd = f"grep -Rlw 'results/tune_20/TFBind10-Exact-v0/sampling_lr0.05/initial_lengthscale6.0/delta0.25/seed{seed}' -e 'train: true'"
+                    cmd = f"grep -Rlw 'results/tune_23/TFBind10-Exact-v0/num_fit_samples10000/sampling_lr0.05/initial_lengthscale5.5/delta0.25/seed{seed}' -e 'train: true'"
                     result_path = subprocess.check_output(cmd, shell=True, text=True)
                     result_path = result_path.strip()
                     #print(result_path)
