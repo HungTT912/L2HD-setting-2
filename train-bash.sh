@@ -28,7 +28,7 @@
 python3 test_tfbind10_tune_23.py --config configs/tune_23/Template-BBDM-tfbind10-l5.5-lr0.05-d0.25.yaml \
 &python3 test_tfbind10_tune_23_1.py --config configs/tune_23/Template-BBDM-tfbind10-l5.5-lr0.05-d0.25.yaml 
 
-python3 test_tfbind10_tune_23_2.py --config configs/tune_23/Template-BBDM-tfbind10-l5.5-lr0.05-d0.25.yaml \
-&python3 test_tfbind10_tune_23_3.py --config configs/tune_23/Template-BBDM-tfbind10-l5.5-lr0.05-d0.25.yaml 
+# python3 test_tfbind10_tune_23_2.py --config configs/tune_23/Template-BBDM-tfbind10-l5.5-lr0.05-d0.25.yaml \
+# &python3 test_tfbind10_tune_23_3.py --config configs/tune_23/Template-BBDM-tfbind10-l5.5-lr0.05-d0.25.yaml 
 
-python3 test_tfbind10_tune_23_4.py --config configs/tune_23/Template-BBDM-tfbind10-l5.5-lr0.05-d0.25.yaml 
+# python3 test_tfbind10_tune_23_4.py --config configs/tune_23/Template-BBDM-tfbind10-l5.5-lr0.05-d0.25.yaml 

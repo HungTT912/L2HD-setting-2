@@ -185,7 +185,7 @@ def main():
     best_tf8_hyper = np.unique(best_tf8_hyper,axis=0)
     print(len(best_tf8_hyper))
     num_candidates = len(best_tf8_hyper)
-    best_tf8_hyper = best_tf8_hyper[int(num_candidates/5): int(2*num_candidates/5)] 
+    best_tf8_hyper = best_tf8_hyper[int(num_candidates/2):] 
 
     sampling_lr = 0.05
     for lengthscale in [5.5]:
