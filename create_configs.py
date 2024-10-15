@@ -90,10 +90,10 @@ config_template = {
 }
 
 # Hyperparameter lists
-lengthscale = 5.5
+lengthscale = 6.5
 learning_rates = [0.05]
 delta_lengthscales = [0.25]
-num_fit_samples_list = [5000,7500,8000,8500,9000,10000,12000,13000,14000,15000,16000,17000,18000] 
+num_fit_samples_list = [9000,10000,12000,13000,14000,15000,16000,17000,18000] 
 task = 'tfbind8'
 tune = 'tune_23'
 

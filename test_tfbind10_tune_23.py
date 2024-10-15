@@ -149,10 +149,11 @@ def main():
         task.map_to_logits()
     
     classifier_free_guidance_prob = 0.15 
+    lengthscale = nconfig.GP.initial_lengthscale
     num_fit_samples_list = [10000,12000,13000,14000,15000,16000,17000,18000] 
     best_tf8_hyper = None 
     for num_fit_samples in num_fit_samples_list: 
-        best_tf8_hyper1 =  pd.read_csv(f'tuning_results/tune_23/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples}_lengthscale5.5_sampling_lr0.05_delta0.25.csv')
+        best_tf8_hyper1 =  pd.read_csv(f'tuning_results/tune_23/result/tuning_result_tfbind8_num_fit_samples{num_fit_samples}_lengthscale{lengthscale}_sampling_lr0.05_delta0.25.csv')
         best_tf8_hyper1 = best_tf8_hyper1[best_tf8_hyper1['mean (100th)']>0.9795]
         best_tf8_hyper = pd.concat([best_tf8_hyper,best_tf8_hyper1])
     best_tf8_hyper = best_tf8_hyper.sort_values(by= 'mean (100th)',ascending= False)
@@ -190,7 +191,7 @@ def main():
     
 
     sampling_lr = 0.05
-    for lengthscale in [5.5]:
+    for lengthscale in [lengthscale]:
         for delta in [0.25]: 
 
             folder_path = './tuning_results/tune_23/result' 
