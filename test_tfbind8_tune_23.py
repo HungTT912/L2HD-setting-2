@@ -116,7 +116,8 @@ def main():
     classifier_free_guidance_prob = 0.15 
     num_fit_samples = nconfig.GP.num_fit_samples
     sampling_lr = 0.05
-    for lengthscale in [5.5]:
+    lengthscale = nconfig.GP.initial_lengthscale
+    for lengthscale in [lengthscale]:
         for delta in [0.25]: 
 
             folder_path = './tuning_results/tune_23/result' 
@@ -133,7 +134,7 @@ def main():
             tested_parameters = df[['lengthscale','delta','eta','alpha','classifier_free_guidance_weight']].values.tolist()
           
             for eta in [0.0,0.05,0.1,0.15,0.2,0.25,0.3,0.4,0.5,0.75,1.0]: 
-                for alpha in [1.0,0.95,0.9,0.85,0.8,0.7]:
+                for alpha in [1.0,0.95,0.9,0.85,0.8]:
                     for classifier_free_guidance_weight in [-3.0,-2.5,-2.0,-1.5]:  
                         if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
                             continue 
