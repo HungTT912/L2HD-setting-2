@@ -108,12 +108,6 @@ def main():
     for seed in seed_list:
         nconfig.args.train = True 
         nconfig.args.seed = seed 
-        alpha = 0.95
-        eta = 0.3 if task.is_discrete else 0.0
-        classifier_free_guidance_weight = -1.5
-        nconfig.testing.alpha = alpha 
-        nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
-        nconfig.model.BB.params.eta = eta 
         model_load_path, optim_sche_load_path = trainer(nconfig)
         model_load_path_list.append(model_load_path) 
         optim_sche_load_path_list.append(optim_sche_load_path)
@@ -144,6 +138,7 @@ def main():
     std_score_50th = np_result_50th.std()
     print(nconfig.task.name)
     print(model_load_path_list[0])
+    print(optim_sche_load_path_list[0])
     print(mean_score_100th, std_score_100th)
     print(mean_score_80th, std_score_80th)
     print(mean_score_50th, std_score_50th)
