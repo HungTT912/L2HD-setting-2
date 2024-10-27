@@ -81,16 +81,16 @@ class BaseRunner(ABC):
         
         # get offline data from design-bench
         
-        # if self.config.args.train == True or self.config.task.name!= 'TFBind10-Exact-v0': 
-        self.offline_x, self.mean_offline_x, self.std_offline_x, self.offline_y, self.mean_offline_y, self.std_offline_y = self.get_offline_data()
-        
-        if self.config.task.normalize_x:
-            self.offline_x = (self.offline_x - self.mean_offline_x) / self.std_offline_x
-        if self.config.task.normalize_y:
-            self.offline_y = (self.offline_y - self.mean_offline_y) / self.std_offline_y
-    
-        self.offline_x = self.offline_x.to(self.config.training.device[0])
-        self.offline_y = self.offline_y.to(self.config.training.device[0])
+        if self.config.args.train == True or self.config.task.name!= 'TFBind10-Exact-v0': 
+            self.offline_x, self.mean_offline_x, self.std_offline_x, self.offline_y, self.mean_offline_y, self.std_offline_y = self.get_offline_data()
+            
+            if self.config.task.normalize_x:
+                self.offline_x = (self.offline_x - self.mean_offline_x) / self.std_offline_x
+            if self.config.task.normalize_y:
+                self.offline_y = (self.offline_y - self.mean_offline_y) / self.std_offline_y
+
+            self.offline_x = self.offline_x.to(self.config.training.device[0])
+            self.offline_y = self.offline_y.to(self.config.training.device[0])
 
     def get_offline_data(self):
         if self.config.task.name != 'TFBind10-Exact-v0':
@@ -587,6 +587,6 @@ class BaseRunner(ABC):
         #                     f"random_solution.npy"), low_candidates.cpu().numpy())
         # np.save(os.path.join("/mnt/disk2/cuongdm/BBDM/results/ant/BrownianBridge/2024-08-21T16-36-17/samples",
         #                     f"random_solution.npy"), high_candidates.cpu().numpy())
-        np.save(f'{self.config.task.name}_full_distribution_final_results.npy',final_score.cpu().numpy())
+        # np.save(f'{self.config.task.name}_full_distribution_final_results.npy',final_score.cpu().numpy())
         percentiles = torch.quantile(final_score, torch.tensor([1.0, 0.8, 0.5]), interpolation='higher') 
         return percentiles[0].item(), percentiles[1].item(), percentiles[2].item()
