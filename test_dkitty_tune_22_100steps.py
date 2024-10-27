@@ -198,13 +198,13 @@ def main():
                     header = ['sampling_lr','lengthscale','delta', 'eta','alpha','classifier_free_guidance_weight', 'mean (100th)', 'std (100th)', 'mean (80th)', 'std (80th)', 'mean (50th)', 'std (50th)']
                     writer = csv.writer(file)
                     writer.writerow(header)
-            # df = pd.read_csv(file_path) 
-            # tested_parameters = df[['lengthscale','delta','eta','alpha','classifier_free_guidance_weight']].values.tolist()
-            for alpha in [0.9,0.95]: 
-                for classifier_free_guidance_weight in [-1.5,-2.0,-4.0] :
-                    for eta in [0.3, 0.0, 0.05, 0.1, 0.15]:  
-                    # if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
-                    #     continue 
+            df = pd.read_csv(file_path) 
+            tested_parameters = df[['lengthscale','delta','eta','alpha','classifier_free_guidance_weight']].values.tolist()
+            for alpha in [0.9,0.95,0.8,0.85]: 
+                for classifier_free_guidance_weight in [-1.5,-2.0] :
+                    for eta in [0.0, 0.05, 0.1, 0.15, 0.2,0.25,0.3,0.4,0.5,0.75,1.0]:  
+                        if [lengthscale, delta, eta, alpha, classifier_free_guidance_weight] in tested_parameters: 
+                            continue 
                         print([lengthscale,delta, eta, alpha, classifier_free_guidance_weight])
                         results_100th = []
                         results_80th = []
