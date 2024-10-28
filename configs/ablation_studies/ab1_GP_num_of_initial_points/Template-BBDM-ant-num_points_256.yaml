@@ -4,6 +4,7 @@ GP:
   initial_lengthscale: 1.0
   initial_outputscale: 1.0
   noise: 0.01
+  num_fit_samples: 10004
   num_functions: 8
   num_gradient_steps: 100
   num_points: 256
@@ -28,6 +29,7 @@ model:
         condition_key: SpatialRescaler
         hidden_size: 1024
         image_size: 60
+      eta: 0.2
       loss_type: l1
       max_var: 1.0
       mt_type: linear
@@ -56,6 +58,8 @@ task:
   normalize_x: true
   normalize_y: true
 testing:
+  alpha: 0.8
+  classifier_free_guidance_weight: -1.5
   clip_denoised: false
   num_candidates: 128
   percentile_sampling: 0.2
@@ -69,5 +73,5 @@ training:
   save_interval: 20
   val_frac: 0.1
   validation_interval: 20
-tune: ablation_studies/ab1/num_points_256
+tune: ablation_studies/ab1/num_points256
 wandb_name: abs1-ant-num_points_256

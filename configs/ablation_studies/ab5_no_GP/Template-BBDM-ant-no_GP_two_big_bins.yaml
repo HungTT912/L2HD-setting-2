@@ -38,6 +38,7 @@ model:
       sample_step: 200
       sample_type: linear
       skip_sample: true
+      eta: 0.2
   CondStageParams:
     in_channels: 3
     n_stages: 2
@@ -62,6 +63,8 @@ testing:
   num_candidates: 128
   percentile_sampling: 0.2
   type_sampling: highest
+  alpha: 0.8
+  classifier_free_guidance_weight: -1.5
 training:
   accumulate_grad_batches: 2
   batch_size: 64

@@ -1,8 +1,8 @@
 GP:
   delta_lengthscale: 0.0
   delta_variance: 0.0
-  initial_lengthscale: 5.0
-  initial_outputscale: 5.0
+  initial_lengthscale: 6.25
+  initial_outputscale: 6.25
   noise: 0.01
   num_functions: 8
   num_gradient_steps: 100
@@ -10,7 +10,7 @@ GP:
   sampling_from_GP_lr: 0.05
   threshold_diff: 0.001
   type_of_initial_points: highest
-  num_fit_samples : 17000
+  num_fit_samples : 15000
 model:
   BB:
     lr_scheduler:
@@ -37,6 +37,7 @@ model:
       sample_step: 200
       sample_type: linear
       skip_sample: true
+      eta: 0.2
   CondStageParams:
     in_channels: 3
     n_stages: 2
@@ -61,6 +62,8 @@ testing:
   num_candidates: 128
   percentile_sampling: 0.2
   type_sampling: highest
+  alpha: 0.8
+  classifier_free_guidance_weight: -1.5
 training:
   accumulate_grad_batches: 2
   batch_size: 64
