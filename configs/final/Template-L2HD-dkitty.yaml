@@ -21,6 +21,7 @@ testing:
   num_candidates: 128
   alpha: 0.9
   classifier_free_guidance_weight: -1.5
+  save_npy: True
 
 
 task: 

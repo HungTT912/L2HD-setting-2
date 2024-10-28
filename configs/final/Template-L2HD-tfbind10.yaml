@@ -64,6 +64,7 @@ testing:
   type_sampling: highest
   classifier_free_guidance_weight: -1.5
   alpha: 0.9
+  save_npy: True
 training:
   accumulate_grad_batches: 2
   batch_size: 64

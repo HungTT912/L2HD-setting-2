@@ -607,6 +607,7 @@ class BaseRunner(ABC):
         #                     f"random_solution.npy"), low_candidates.cpu().numpy())
         # np.save(os.path.join("/mnt/disk2/cuongdm/BBDM/results/ant/BrownianBridge/2024-08-21T16-36-17/samples",
         #                     f"random_solution.npy"), high_candidates.cpu().numpy())
-        np.save(f'{self.config.task.name}_full_distribution_final_results.npy',final_score.cpu().numpy())
+        if hasattr(self.config.args,'save_npy') and self.config.args.save_npy == True: 
+            np.save(f'{self.config.task.name}_full_distribution_final_results_{self.config.args.seed}.npy',final_score.cpu().numpy())
         percentiles = torch.quantile(final_score, torch.tensor([1.0, 0.8, 0.5]), interpolation='higher') 
         return percentiles[0].item(), percentiles[1].item(), percentiles[2].item()
