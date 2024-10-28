@@ -15,6 +15,7 @@ from tqdm.autonotebook import tqdm
 
 from runners.base.EMA import EMA
 from runners.utils import make_save_dirs, remove_file, sampling_data_from_GP, create_train_dataloader, create_val_dataloader, sampling_from_offline_data, testing_by_oracle
+from runners.utils import construct_bins_with_scores, sampling_data_from_trajectories
 import numpy as np
 
 import gpytorch 
@@ -48,7 +49,7 @@ class BaseRunner(ABC):
         #                                                         with_time=True)
         if self.config.args.train:
             self.config.result.ckpt_path = make_save_dirs(self.config.args,
-                                                    prefix=self.config.tune+'/'+ self.config.task.name + f'/num_fit_samples{self.config.GP.num_fit_samples}/sampling_lr{self.config.GP.sampling_from_GP_lr}/initial_lengthscale{self.config.GP.initial_lengthscale}/delta{self.config.GP.delta_lengthscale}/seed{self.config.args.seed}',
+                                                    prefix=self.config.tune+'/'+ self.config.task.name + f'/sampling_lr{self.config.GP.sampling_from_GP_lr}/initial_lengthscale{self.config.GP.initial_lengthscale}/delta{self.config.GP.delta_lengthscale}/seed{self.config.args.seed}',
                                                     suffix=self.config.model.model_name,
                                                     with_time=False)
             # self.config.result.ckpt_path = make_save_dirs(self.config.args,
@@ -351,18 +352,26 @@ class BaseRunner(ABC):
             noise = torch.tensor(self.config.GP.noise, device=self.config.training.device[0])
             mean_prior = torch.tensor(0.0, device = self.config.training.device[0]) 
             
-            best_indices = torch.argsort(self.offline_y)[-1024:]
-            self.best_x = self.offline_x[best_indices]
+            # best_indices = torch.argsort(self.offline_y)[-1024:]
+            # self.best_x = self.offline_x[best_indices]
             
-            # if self.config.GP.type_of_initial_points == 'highest':
-            #     best_indices = torch.argsort(self.offline_y)[-1024:]
-            #     self.best_x = self.offline_x[best_indices]
-            # elif self.config.GP.type_of_initial_points == 'lowest': 
-            #     best_indices = torch.argsort(self.offline_y)[:1024]
-            #     self.best_x = self.offline_x[best_indices]
-            # else : 
-            #     self.best_x = self.offline_x 
+            if self.config.GP.type_of_initial_points == 'highest':
+                best_indices = torch.argsort(self.offline_y)[-1024:]
+                self.best_x = self.offline_x[best_indices]
+            elif self.config.GP.type_of_initial_points == 'lowest': 
+                best_indices = torch.argsort(self.offline_y)[:1024]
+                self.best_x = self.offline_x[best_indices]
+            else : 
+                self.best_x = self.offline_x 
             
+            if hasattr(self.config.training,'no_GP') and self.config.training.no_GP == True : 
+                self.bins, self.high_scores, self.low_scores = construct_bins_with_scores(x_train=self.offline_x,
+                                                                                        y_train=self.offline_y,
+                                                                                        device = self.config.training.device[0], 
+                                                                                        num_functions=self.config.GP.num_functions, 
+                                                                                        num_points=self.config.GP.num_points,
+                                                                                        threshold_diff = self.config.GP.threshold_diff)
+
             val_loader = None
             val_dataset = []
             
@@ -387,19 +396,30 @@ class BaseRunner(ABC):
                                 variance=variance, 
                                 noise=noise, 
                                 mean_prior=mean_prior)
-                # if self.config.training.no_GP == True : 
-                #     data_from_GP = sampling_from_offline_data
-                data_from_GP = sampling_data_from_GP(x_train=self.best_x,
-                                                    device=self.config.training.device[0],
-                                                    GP_Model=GP_Model,
-                                                    num_functions=self.config.GP.num_functions,
-                                                    num_gradient_steps=self.config.GP.num_gradient_steps,
-                                                    num_points=self.config.GP.num_points,
-                                                    learning_rate=self.config.GP.sampling_from_GP_lr,
-                                                    delta_lengthscale=self.config.GP.delta_lengthscale,
-                                                    delta_variance=self.config.GP.delta_variance,
-                                                    seed=epoch,
-                                                    threshold_diff=self.config.GP.threshold_diff)
+                if hasattr(self.config.training,'no_GP') and self.config.training.no_GP == True : 
+                    data_from_GP = sampling_data_from_trajectories(x_train=self.offline_x,
+                                                                y_train=self.offline_y,
+                                                                high_scores=self.high_scores,
+                                                                low_scores=self.low_scores,
+                                                                bins=self.bins,
+                                                                device = self.config.training.device[0], 
+                                                                num_functions=self.config.GP.num_functions, 
+                                                                num_points=self.config.GP.num_points,
+                                                                threshold_diff = self.config.GP.threshold_diff,
+                                                                last_bins=self.config.GP.last_bins,
+                                                                two_big_bins=self.config.GP.two_big_bins)
+                else: 
+                    data_from_GP = sampling_data_from_GP(x_train=self.best_x,
+                                                        device=self.config.training.device[0],
+                                                        GP_Model=GP_Model,
+                                                        num_functions=self.config.GP.num_functions,
+                                                        num_gradient_steps=self.config.GP.num_gradient_steps,
+                                                        num_points=self.config.GP.num_points,
+                                                        learning_rate=self.config.GP.sampling_from_GP_lr,
+                                                        delta_lengthscale=self.config.GP.delta_lengthscale,
+                                                        delta_variance=self.config.GP.delta_variance,
+                                                        seed=epoch,
+                                                        threshold_diff=self.config.GP.threshold_diff)
                 train_loader, current_epoch_val_dataset = create_train_dataloader(data_from_GP=data_from_GP,
                                                         val_frac=self.config.training.val_frac,
                                                         batch_size=self.config.training.batch_size,
@@ -587,6 +607,6 @@ class BaseRunner(ABC):
         #                     f"random_solution.npy"), low_candidates.cpu().numpy())
         # np.save(os.path.join("/mnt/disk2/cuongdm/BBDM/results/ant/BrownianBridge/2024-08-21T16-36-17/samples",
         #                     f"random_solution.npy"), high_candidates.cpu().numpy())
-        # np.save(f'{self.config.task.name}_full_distribution_final_results.npy',final_score.cpu().numpy())
+        np.save(f'{self.config.task.name}_full_distribution_final_results.npy',final_score.cpu().numpy())
         percentiles = torch.quantile(final_score, torch.tensor([1.0, 0.8, 0.5]), interpolation='higher') 
         return percentiles[0].item(), percentiles[1].item(), percentiles[2].item()

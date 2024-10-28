@@ -69,11 +69,7 @@ def get_optimizer(optim_config, parameters):
 ### Sampling pretrain data from offline data 
 
 
-
-def sampling_data_from_trajectories(x_train, y_train, num_points = 1024, threshold_diff = 0.1):
-    datasets = {} 
-    datasets['f0'] = {} 
-    
+def construct_bins_with_scores(x_train, y_train,device, num_functions= 8,num_points = 1024, threshold_diff = 0.1):
     N, D = x_train.shape[0], x_train.shape[1] 
     points = x_train
     values = y_train  
@@ -86,7 +82,7 @@ def sampling_data_from_trajectories(x_train, y_train, num_points = 1024, thresho
 
     num_bins = 64
     traj_len = 128
-    num_trajectories = num_points 
+    num_trajectories = num_points * num_functions 
 
     min_reg = torch.min(regrets)
     max_reg = torch.max(regrets)
@@ -112,7 +108,7 @@ def sampling_data_from_trajectories(x_train, y_train, num_points = 1024, thresho
     
     # print("90th percentile: ", np.percentile(regrets, 90))
 
-    tau = optima - np.percentile(regrets, 90)
+    tau = optima - torch.quantile(regrets, 0.9).to(device)
     K = 0.03 * N 
     print("tau: ", tau, " K: ", K)
 
@@ -120,33 +116,20 @@ def sampling_data_from_trajectories(x_train, y_train, num_points = 1024, thresho
         low = optima - (min_reg + b * bin_len)
         high = optima - (min_reg + (b + 1) * bin_len)
         avg = (low + high) / 2
-        high_exps[b] = np.exp((avg - optima) / tau)
-        low_exps[b] = np.exp((avg - minima) /tau)
+        high_exps[b] = torch.exp((avg - optima) / tau)
+        low_exps[b] = torch.exp((avg - minima) /tau)
 
     for b in range(len(bins)):
         high_scores[b] = (nis[b] / (nis[b] + K)) * high_exps[b]
         low_scores[b] =  (nis[b] / (nis[b] + K)) * low_exps[b]
+    
+    high_scores = torch.tensor(high_scores)
+    high_scores = high_scores / torch.sum(high_scores)
+    
+    low_scores = torch.tensor(low_scores)
+    low_scores = low_scores / torch.sum(low_scores)
+    return bins, high_scores, low_scores 
 
-    scores = np.array(scores)
-    scores = traj_len * (scores / np.sum(scores))
-    # scores = np.floor(scores).astype(int)
-    scores = np.round(scores).astype(int)
-    print("Unrounded scores: ", scores, np.sum(scores))
-    scores[0] += (traj_len - np.sum(scores))
-
-    assert np.sum(scores) == traj_len
-    
-    selected_high_bins = np.random.choice(a=range(bin_len), size=num_points, replace=True, p=high_scores) 
-    selected_low_bins = np.random.choice(a=range(bin_len), size=num_points, replace=True, p=low_scores)
-    
-    for i in range(num_points):
-        high_index = np.random.choice(a=bins[selected_high_bins[i]], size=1) 
-        low_index = np.random.choice(a=bins[selected_low_bins[i]], size=1) 
-        sample = [(x_train[high_index], y_train[high_index]), (x_train[low_index],y_train[low_index])]
-        datasets['f0'].append(sample) 
-        
-    
-    return datasets 
 
 ### Sampling data from GP model
 def sampling_data_from_GP(x_train, device, GP_Model, num_gradient_steps = 50, num_functions = 5, num_points = 10, learning_rate = 0.001, delta_lengthscale = 0.1, delta_variance = 0.1, seed = 0, threshold_diff = 0.1):
@@ -208,6 +191,42 @@ def sampling_data_from_GP(x_train, device, GP_Model, num_gradient_steps = 50, nu
     GP_Model.variance = variance
     
     return datasets
+
+def sampling_data_from_trajectories(x_train, y_train,high_scores, low_scores, bins, device, num_functions= 8,num_points = 1024, threshold_diff = 0.1, last_bins=True, two_big_bins = False):
+    datasets = {}
+    if last_bins == True : 
+        selected_high_bins = torch.full((num_points,),0)  # the last bins
+        selected_low_bins = torch.full((num_points,),len(bins)-1) # the first bins (smallest objective) 
+    elif two_big_bins == True : 
+        sorted_indices = torch.argsort(y_train) 
+        x_train = x_train[sorted_indices]
+        y_train = y_train[sorted_indices]
+        selected_low_points = torch.randint(0,int(y_train.shape[0]/2),size=(num_functions*num_points,))
+        selected_high_points = torch.randint(int(y_train.shape[0]/2),y_train.shape[0]-1,size=(num_functions*num_points,))
+        datasets['f0']=[]
+        for i in range(num_points*num_functions): 
+            if y_train[selected_high_points[i]]-y_train[selected_low_points[i]] <= threshold_diff: 
+                continue 
+            sample = [(x_train[selected_high_points[i]],y_train[selected_high_points[i]]),(x_train[selected_low_points[i]],y_train[selected_low_points[i]])]
+            datasets['f0'].append(sample)
+        return datasets
+    else: 
+        selected_high_bins = torch.multinomial(high_scores,num_points,replacement=True) 
+        selected_low_bins = torch.multinomial(low_scores,num_points,replacement=True) 
+        
+    
+    for iter in range(num_functions):
+        datasets[f'f{iter}']=[]
+        for i in range(num_points):
+            high_index = torch.randint(low=0,high=len(bins[selected_high_bins[i]]),size=(1,))
+            low_index = torch.randint(low=0,high=len(bins[selected_low_bins[i]]),size=(1,))
+            high_index = bins[selected_high_bins[i]][high_index]
+            low_index = bins[selected_low_bins[i]][low_index]
+            if y_train[high_index]-y_train[low_index] > threshold_diff: 
+                sample = [(x_train[high_index], y_train[high_index]), (x_train[low_index],y_train[low_index])]
+                datasets[f'f{iter}'].append(sample) 
+    return datasets   
+
 
 class CustomDataset(Dataset):
     def __init__(self, data):
