@@ -4,7 +4,7 @@ GP:
   initial_lengthscale: 6.25
   initial_outputscale: 6.25
   noise: 0.01
-  num_fit_samples: 17000
+  num_fit_samples: 15000
   num_functions: 8
   num_gradient_steps: 100
   num_points: 1024
@@ -37,7 +37,7 @@ model:
       sample_step: 200
       sample_type: linear
       skip_sample: true
-      eta: 0.75
+      eta: 0.2
   CondStageParams:
     in_channels: 3
     n_stages: 2
@@ -63,7 +63,7 @@ testing:
   percentile_sampling: 0.2
   type_sampling: highest
   classifier_free_guidance_weight: -1.5
-  alpha: 0.9
+  alpha: 0.8
   save_npy: True 
 training:
   accumulate_grad_batches: 2

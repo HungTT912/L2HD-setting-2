@@ -19,7 +19,7 @@ testing:
   percentile_sampling: 0.1
   type_sampling : 'highest'
   num_candidates: 128
-  alpha: 0.9
+  alpha: 0.8
   classifier_free_guidance_weight: -1.5
   save_npy: True 
 
@@ -84,7 +84,7 @@ model:
       sample_step: 200
 
       num_timesteps: 1000 # timesteps
-      eta: 0.0 # DDIM reverse process eta
+      eta: 0.2 # DDIM reverse process eta
       max_var: 1.0 # maximum variance
 
       MLPParams:
