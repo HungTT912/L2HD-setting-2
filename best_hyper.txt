@@ -1,7 +1,7 @@
 discrete_task : 
-15500 GP fitting samples for tfbind8 
-lengthscale 5.0, sampling_lr 0.05
-eta= 0.5, alpha=0.80, w-4.0	
+15000 GP fitting samples for tfbind8 
+lengthscale 6.25, sampling_lr 0.05
+eta= 0.2, alpha=0.8, w=-1.5
 
 continuous : 
-eta = 0.05, alpha= 0.8, w=-1.5	
+eta = 0.2, alpha= 0.8, w=-1.5	
