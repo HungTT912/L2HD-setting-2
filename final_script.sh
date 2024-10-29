@@ -1,6 +1,11 @@
+python3 test_for_ab5.py --config configs/ablation_studies/ab5_no_GP/Template-BBDM-ant-no_GP_last_bins.yaml \
+&python3 test_for_final.py --config configs/final/Template-L2HD-tfbind8.yaml
+
 python3 train_and_test_for_all.py --config configs/final/Template-L2HD-ant.yaml --save_top \
 &python3 train_and_test_for_all.py --config configs/final/Template-L2HD-dkitty.yaml --save_top \
 &python3 train_and_test_for_all.py --config configs/final/Template-L2HD-tfbind10.yaml --save_top 
+
+python3 train_and_test_for_all.py --config configs/final/Template-L2HD-utr.yaml --save_top 
 
 
 # python3 train_and_test_for_all.py --config configs/final/Template-L2HD-tfbind8.yaml --save_top \

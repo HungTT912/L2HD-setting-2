@@ -580,8 +580,8 @@ class BaseRunner(ABC):
             self.apply_ema()
         self.net.eval()
         
-        task_to_min = {'TFBind8-Exact-v0': 0.0, 'TFBind10-Exact-v0': -1.8585268, 'AntMorphology-Exact-v0': -386.90036, 'DKittyMorphology-Exact-v0': -880.4585}
-        task_to_max = {'TFBind8-Exact-v0': 1.0, 'TFBind10-Exact-v0': 2.1287067, 'AntMorphology-Exact-v0': 590.24445, 'DKittyMorphology-Exact-v0': 340.90985}
+        task_to_min = {'UTR-ResNet-v0': 0.0,'TFBind8-Exact-v0': 0.0, 'TFBind10-Exact-v0': -1.8585268, 'AntMorphology-Exact-v0': -386.90036, 'DKittyMorphology-Exact-v0': -880.4585}
+        task_to_max = {'UTR-ResNet-v0': 12.0,'TFBind8-Exact-v0': 1.0, 'TFBind10-Exact-v0': 2.1287067, 'AntMorphology-Exact-v0': 590.24445, 'DKittyMorphology-Exact-v0': 340.90985}
         task_to_best = {'TFBind8-Exact-v0': 0.43929616, 'TFBind10-Exact-v0': 0.005328223, 'AntMorphology-Exact-v0': 165.32648, 'DKittyMorphology-Exact-v0': 199.36252}
         
         oracle_y_min = task_to_min[self.config.task.name]
@@ -607,7 +607,7 @@ class BaseRunner(ABC):
         #                     f"random_solution.npy"), low_candidates.cpu().numpy())
         # np.save(os.path.join("/mnt/disk2/cuongdm/BBDM/results/ant/BrownianBridge/2024-08-21T16-36-17/samples",
         #                     f"random_solution.npy"), high_candidates.cpu().numpy())
-        if hasattr(self.config.args,'save_npy') and self.config.args.save_npy == True: 
+        if hasattr(self.config.testing,'save_npy') and self.config.testing.save_npy == True: 
             np.save(f'{self.config.task.name}_full_distribution_final_results_{self.config.args.seed}.npy',final_score.cpu().numpy())
         percentiles = torch.quantile(final_score, torch.tensor([1.0, 0.8, 0.5]), interpolation='higher') 
         return percentiles[0].item(), percentiles[1].item(), percentiles[2].item()

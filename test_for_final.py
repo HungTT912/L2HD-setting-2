@@ -108,8 +108,8 @@ def main():
     for seed in seed_list:
         nconfig.args.train = True 
         nconfig.args.seed = seed 
-        model_load_path = f'results/final/{nconfig.task.name}/num_fit_samples{nconfig.training.GP.num_fit_samples}/sampling_lr0.001/initial_lengthscale{nconfig.training.GP.initial_lengthscale}/delta0.25/seed{seed}/BrownianBridge/checkpoint/top_model_epoch_100.pth'
-        optim_sche_load_path = f'results/final/{nconfig.task.name}/num_fit_samples{nconfig.training.GP.num_fit_samples}/sampling_lr0.001/initial_lengthscale{nconfig.training.GP.initial_lengthscale}/delta0.25/seed{seed}/BrownianBridge/checkpoint/op_optim_sche_epoch_100.pth'
+        model_load_path = f'results/final/TFBind8-Exact-v0/sampling_lr0.05/initial_lengthscale6.25/delta0.25/seed{seed}/BrownianBridge/checkpoint/top_model_epoch_100.pth'
+        optim_sche_load_path = f'results/final/TFBind8-Exact-v0/sampling_lr0.05/initial_lengthscale6.25/delta0.25/seed{seed}/BrownianBridge/checkpoint/top_model_epoch_100.pth'
         model_load_path_list.append(model_load_path) 
         optim_sche_load_path_list.append(optim_sche_load_path)
     

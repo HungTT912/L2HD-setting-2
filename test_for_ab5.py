@@ -7,9 +7,9 @@ import random
 import numpy as np
 import pandas as pd 
 import csv
-import design_bench
 import wandb 
 wandb.login(key="1cfab558732ccb32d573a7276a337d22b7d8b371")
+import design_bench
 
 from utils import dict2namespace, get_runner, namespace2dict
 
@@ -87,7 +87,7 @@ def tester(config,task):
 def main():
     nconfig, dconfig = parse_args_and_config()
     wandb.init(project='BBDM',
-            name='test'+nconfig.wandb_name,
+            name=nconfig.wandb_name,
             config = dconfig) 
     args = nconfig.args
     gpu_ids = args.gpu_ids
@@ -102,53 +102,48 @@ def main():
                                 dataset_kwargs={"max_samples": 10000})
     if task.is_discrete: 
         task.map_to_logits()
-        
     seed_list = range(8)
     model_load_path_list = [] 
     optim_sche_load_path_list = []
-    nconfig.args.train = False   
-    alpha = 0.95
-    eta = 0.3 if task.is_discrete else 0.0
-    classifier_free_guidance_weight = -1.5
-    lengthscale = 5.0 if task.is_discrete else 1.0 
-    sampling_lr = 0.05 if task.is_discrete else 0.001
+    for seed in seed_list:
+        nconfig.args.train = True 
+        nconfig.args.seed = seed 
+        model_load_path = f'results/ablation_studies/ab5/no_gp/last_bins/AntMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25/seed{seed}/BrownianBridge/checkpoint/top_model_epoch_100.pth'
+        optim_sche_load_path = f'results/ablation_studies/ab5/no_gp/last_bins/AntMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25/seed{seed}/BrownianBridge/checkpoint/top_optim_sche_epoch_100.pth'
+        model_load_path_list.append(model_load_path) 
+        optim_sche_load_path_list.append(optim_sche_load_path)
     
-    nconfig.model.BB.params.eta = eta 
-    nconfig.testing.classifier_free_guidance_weight = classifier_free_guidance_weight
-    nconfig.testing.alpha = alpha
-    for type_no_gp in ['gp_delta0','','/last_bins','/two_big_bins'] :
-        folder_path = f'results/ablation_studies/ab5/no_gp{type_no_gp}/{nconfig.task.name}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta0.25'
-        if type_no_gp == 'gp_delta0': 
-            folder_path = f'results/ablation_studies/ab5/gp_delta0/{nconfig.task.name}/sampling_lr{sampling_lr}/initial_lengthscale{lengthscale}/delta0.0'
-        results_100th = [] 
-        results_80th = [] 
-        results_50th = []
-        for seed in seed_list:
-            nconfig.args.seed = seed 
-            model_load_path = folder_path+f'/seed{seed}/BrownianBridge/checkpoint/top_model_epoch_100.pth'
-            optim_sche_load_path = folder_path+f'/seed{seed}/BrownianBridge/checkpoint/top_optim_sche_epoch_100.pth'
-            nconfig.model.model_load_path = model_load_path
-            nconfig.model.optim_sche_load_path = optim_sche_load_path
-            result = tester(nconfig,task)
-            print("Score : ",result[0]) 
-            results_100th.append(result[0])
-            results_80th.append(result[1]) 
-            results_50th.append(result[2])
-        np_result_100th = np.array(results_100th)
-        mean_score_100th = np_result_100th.mean() 
-        std_score_100th = np_result_100th.std()
-        np_result_80th = np.array(results_80th)
-        mean_score_80th = np_result_80th.mean() 
-        std_score_80th = np_result_80th.std()
-        np_result_50th = np.array(results_50th)
-        mean_score_50th = np_result_50th.mean() 
-        std_score_50th = np_result_50th.std()
-        print(nconfig.task.name)
-        print(f'type of no GP : {type_no_gp}')
-        print(mean_score_100th, std_score_100th)
-        print(mean_score_80th, std_score_80th)
-        print(mean_score_50th, std_score_50th)
-        
+    seed_list = range(8)
+    results_100th = []
+    results_80th = [] 
+    results_50th = []
+    for seed in seed_list: 
+        nconfig.args.train=False 
+        nconfig.args.seed = seed
+        nconfig.model.model_load_path = model_load_path_list[seed]
+        nconfig.model.optim_sche_load_path = optim_sche_load_path_list[seed]
+        result = tester(nconfig,task)
+        print("Score : ",result[0]) 
+        results_100th.append(result[0])
+        results_80th.append(result[1]) 
+        results_50th.append(result[2])
+    assert len(results_100th)==8 
+    np_result_100th = np.array(results_100th)
+    mean_score_100th = np_result_100th.mean() 
+    std_score_100th = np_result_100th.std()
+    np_result_80th = np.array(results_80th)
+    mean_score_80th = np_result_80th.mean() 
+    std_score_80th = np_result_80th.std()
+    np_result_50th = np.array(results_50th)
+    mean_score_50th = np_result_50th.mean() 
+    std_score_50th = np_result_50th.std()
+    print(nconfig.task.name)
+    print(model_load_path_list[0])
+    print(optim_sche_load_path_list[0])
+    print(mean_score_100th, std_score_100th)
+    print(mean_score_80th, std_score_80th)
+    print(mean_score_50th, std_score_50th)
+    
     nconfig.args.train = False 
     wandb.finish() 
     
