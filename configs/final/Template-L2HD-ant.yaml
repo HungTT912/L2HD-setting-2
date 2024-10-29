@@ -41,6 +41,7 @@ GP:
   delta_variance: 0.25
   threshold_diff: 0.001
   num_fit_samples: 10004
+  type_of_initial_points: highest
 
 model:
   model_name: "BrownianBridge" # part of result path
