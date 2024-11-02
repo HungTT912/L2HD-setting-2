@@ -25,23 +25,23 @@ config_template = {
         'classifier_free_guidance_weight': -1.5
     },
     "task": {
-        "name": 'AntMorphology-Exact-v0',
+        "name": 'TFBind10-Exact-v0',
         "normalize_y": True,
         "normalize_x": True
     },
     "GP": {
-        "initial_lengthscale": 1.0,
-        "initial_outputscale": 1.0,  # Will be the same as lengthscale
+        "initial_lengthscale": 6.25,
+        "initial_outputscale": 6.25,  # Will be the same as lengthscale
         "noise": 1.e-2,
         "num_functions": 8,
         # "num_gradient_steps": 100,
         "num_points": 1024,
-        "sampling_from_GP_lr": 0.001,
+        "sampling_from_GP_lr": 0.05,
         "delta_lengthscale": 0.25,
         "delta_variance": 0.25,
         "threshold_diff": 0.001,
         "type_of_initial_points": 'highest',
-        "num_fit_samples": 10004
+        "num_fit_samples": 10000
     },
     "model": {
         "model_name": "BrownianBridge",
@@ -84,7 +84,7 @@ config_template = {
                 "num_timesteps": 1000,
                 "max_var": 1.0,
                 "MLPParams": {
-                    "image_size": 60,
+                    "image_size": 30,
                     "hidden_size": 1024,
                     "condition_key": "SpatialRescaler"
                 },
@@ -94,7 +94,7 @@ config_template = {
     }
 }
 
-task = 'ant'
+task = 'tfbind10'
 grad_list = [25,50,75,100]
 # Function to create file names and adjust wandb_name
 def create_filename_and_wandb_name(grads):

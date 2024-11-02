@@ -24,7 +24,7 @@ config_template = {
         'classifier_free_guidance_weight': -1.5
     },
     "task": {
-        "name": 'AntMorphology-Exact-v0',
+        "name": 'DKittyMorphology-Exact-v0',
         "normalize_y": True,
         "normalize_x": True
     },
@@ -84,7 +84,7 @@ config_template = {
                 "num_timesteps": 1000,
                 "max_var": 1.0,
                 "MLPParams": {
-                    "image_size": 60,
+                    "image_size": 56,
                     "hidden_size": 1024,
                     "condition_key": "SpatialRescaler"
                 }
@@ -93,7 +93,7 @@ config_template = {
     }
 }
 
-task = 'ant'
+task = 'dkitty'
 num_points_list = [128, 256, 512, 1024]
 
 # Function to create file names and adjust wandb_name
