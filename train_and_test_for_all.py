@@ -114,41 +114,42 @@ def main():
         model_load_path_list.append(model_load_path) 
         optim_sche_load_path_list.append(optim_sche_load_path)
     
-    seed_list = range(8)
-    results_100th = []
-    results_80th = [] 
-    results_50th = []
-    for seed in seed_list: 
-        nconfig.args.train=False 
-        nconfig.args.seed = seed
-        nconfig.model.model_load_path = model_load_path_list[seed]
-        nconfig.model.optim_sche_load_path = optim_sche_load_path_list[seed]
-        result = tester(nconfig,task)
-        print("Score : ",result[0]) 
-        results_100th.append(result[0])
-        results_80th.append(result[1]) 
-        results_50th.append(result[2])
-    assert len(results_100th)==8 
-    np_result_100th = np.array(results_100th)
-    mean_score_100th = np_result_100th.mean() 
-    std_score_100th = np_result_100th.std()
-    np_result_80th = np.array(results_80th)
-    mean_score_80th = np_result_80th.mean() 
-    std_score_80th = np_result_80th.std()
-    np_result_50th = np.array(results_50th)
-    mean_score_50th = np_result_50th.mean() 
-    std_score_50th = np_result_50th.std()
-    print(nconfig.task.name)
-    print(model_load_path_list[0])
-    print(optim_sche_load_path_list[0])
-    print(mean_score_100th, std_score_100th)
-    print(mean_score_80th, std_score_80th)
-    print(mean_score_50th, std_score_50th)
+    # seed_list = range(8)
+    # results_100th = []
+    # results_80th = [] 
+    # results_50th = []
+    # for seed in seed_list: 
+    #     nconfig.args.train=False 
+    #     nconfig.args.seed = seed
+    #     nconfig.model.model_load_path = model_load_path_list[seed]
+    #     nconfig.model.optim_sche_load_path = optim_sche_load_path_list[seed]
+    #     result = tester(nconfig,task)
+    #     print("Score : ",result[0]) 
+    #     results_100th.append(result[0])
+    #     results_80th.append(result[1]) 
+    #     results_50th.append(result[2])
+    # assert len(results_100th)==8 
+    # np_result_100th = np.array(results_100th)
+    # mean_score_100th = np_result_100th.mean() 
+    # std_score_100th = np_result_100th.std()
+    # np_result_80th = np.array(results_80th)
+    # mean_score_80th = np_result_80th.mean() 
+    # std_score_80th = np_result_80th.std()
+    # np_result_50th = np.array(results_50th)
+    # mean_score_50th = np_result_50th.mean() 
+    # std_score_50th = np_result_50th.std()
+    # print(nconfig.task.name)
+    # print(model_load_path_list[0])
+    # print(optim_sche_load_path_list[0])
+    # print(mean_score_100th, std_score_100th)
+    # print(mean_score_80th, std_score_80th)
+    # print(mean_score_50th, std_score_50th)
    
     # wandb.finish() 
     endtime = time()
     print("########---RUNNING-TIME---#############")
     print(endtime-starttime) 
+   
 
     
 if __name__ == "__main__":
