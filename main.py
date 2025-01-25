@@ -87,7 +87,7 @@ def main():
     else:
         nconfig.training.device = [torch.device(f"cuda:{gpu_ids}")]
     
-    seed_list = range(8) ### number of independent runs with randomly seed 
+    seed_list = range(3) ### number of independent runs with randomly seed 
     if nconfig.task.name != 'TFBind10-Exact-v0':
         task = design_bench.make(nconfig.task.name)
     else:
