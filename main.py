@@ -5,9 +5,10 @@ import copy
 import torch
 import random
 import numpy as np
-import pandas as pd 
+# import pandas as pd 
 import wandb 
 import design_bench
+wandb.login(key="1cfab558732ccb32d573a7276a337d22b7d8b371")
 
 from utils import dict2namespace, get_runner, namespace2dict
 
@@ -75,7 +76,7 @@ def tester(config,task):
 
 def main():
     nconfig, dconfig = parse_args_and_config()
-    wandb.init(project='L2HD',
+    wandb.init(project='L2HD-x_high=x_t->x_0',
             name=nconfig.wandb_name,
             config = dconfig) 
     
@@ -118,6 +119,12 @@ def main():
     print("Normalized 100th percentile score: ")
     print("Mean: ", np.mean(results_100th))
     print("Std: ", np.std(results_100th)) 
+    print("Normalized 80th percentile score: ")
+    print("Mean: ", np.mean(results_80th))
+    print("Std: ", np.std(results_80th))
+    print("Normalized 50th percentile score: ")
+    print("Mean: ", np.mean(results_50th))
+    print("Std: ", np.std(results_50th))
     # optional, print normalized 80th percentile or 50th percentile scores
     
 if __name__ == "__main__":
