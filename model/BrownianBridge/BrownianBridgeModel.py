@@ -126,8 +126,8 @@ class BrownianBridgeModel(nn.Module):
         """
         b, d = x_high.shape
         noise = default(noise, lambda: torch.randn_like(x_high))
-
-        x_t, objective = self.q_sample(x_high, x_low, t, noise)
+        x_t = x_high
+        x_0, objective = self.q_sample(x_high, x_low, t, noise)
         #import pdb ; pdb.set_trace()
         objective_recon = self.denoise_fn(x_t, t, y_high, y_low)
         objective_recon = objective_recon.reshape(objective_recon.shape[0],-1)
@@ -151,9 +151,11 @@ class BrownianBridgeModel(nn.Module):
         m_t = extract(self.m_t, t, x_high.shape)
         var_t = extract(self.variance_t, t, x_high.shape)
         sigma_t = torch.sqrt(var_t)
+        #new setting 
+        x0 = (x_high - m_t*x_low - sigma_t*noise)/(1-m_t) 
 
         if self.objective == 'grad':
-            objective = m_t * (x_low - x_high) + sigma_t * noise
+            objective = m_t * (x_low - x0) + sigma_t * noise
         elif self.objective == 'noise':
             objective = noise
         elif self.objective == 'ysubx':
@@ -162,7 +164,7 @@ class BrownianBridgeModel(nn.Module):
             raise NotImplementedError()
 
         return (
-            (1. - m_t) * x_high + m_t * x_low + sigma_t * noise,
+            x0,
             objective
         )
 

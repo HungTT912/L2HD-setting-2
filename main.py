@@ -6,13 +6,11 @@ import torch
 import random
 import numpy as np
 import pandas as pd 
-import csv
 import wandb 
-wandb.login(key="1cfab558732ccb32d573a7276a337d22b7d8b371")
 import design_bench
 
 from utils import dict2namespace, get_runner, namespace2dict
-from time import time 
+
 
 def parse_args_and_config():
     parser = argparse.ArgumentParser(description=globals()['__doc__'])
@@ -65,15 +63,6 @@ def set_random_seed(SEED=1234):
     torch.backends.cudnn.deterministic = True
 
 
-def CPU_singleGPU_launcher(config):
-    set_random_seed(config.args.seed)
-    runner = get_runner(config.runner, config)
-    if config.args.train:
-        return runner.train()
-    else:
-        with torch.no_grad():
-            runner.test()
-    return
 
 def trainer(config): 
     set_random_seed(config.args.seed)
@@ -85,9 +74,8 @@ def tester(config,task):
     return runner.test(task) 
 
 def main():
-    starttime = time()
     nconfig, dconfig = parse_args_and_config()
-    wandb.init(project='BBDM',
+    wandb.init(project='L2HD',
             name=nconfig.wandb_name,
             config = dconfig) 
     
@@ -97,6 +85,8 @@ def main():
         nconfig.training.device = [torch.device("cpu")]
     else:
         nconfig.training.device = [torch.device(f"cuda:{gpu_ids}")]
+    
+    seed_list = range(8) ### number of independent runs with randomly seed 
     if nconfig.task.name != 'TFBind10-Exact-v0':
         task = design_bench.make(nconfig.task.name)
     else:
@@ -104,24 +94,31 @@ def main():
                                 dataset_kwargs={"max_samples": 10000})
     if task.is_discrete: 
         task.map_to_logits()
-    seed_list = range(8)
+    
+    results_100th, results_80th, results_50th = [], [], [] 
     for seed in seed_list:
+        
         nconfig.args.train = True 
         nconfig.args.seed = seed 
-        set_random_seed(nconfig.args.seed)
-        runner = get_runner(nconfig.runner, nconfig)
+        nconfig.model.model_load_path = None  # reset model load path for a new run 
+        nconfig.model.optim_sche_load_path = None 
         
-        model_load_path, optim_sche_load_path = runner.train()
-        nconfig.model.model_load_path = model_load_path
-        nconfig.model.optim_sche_load_path = optim_sche_load_path
-        high_candidates = runner.test(task)
-
-    endtime = time()
-    print("########---RUNNING-TIME---#############")
-    print(endtime-starttime) 
-    wandb.finish()
-   
-
+        model_load_path, optim_sche_load_path = trainer(nconfig)
+        nconfig.model.model_load_path = model_load_path 
+        nconfig.model.optim_sche_load_path = optim_sche_load_path 
+        
+        nconfig.args.train = False 
+        result = tester(nconfig,task)
+        
+        results_100th.append(result[0])
+        results_80th.append(result[1])
+        results_50th.append(result[2]) 
+        
+    results_100th, results_80th, results_50th = np.array(results_100th), np.array(results_80th), np.array(results_50th)
+    print("Normalized 100th percentile score: ")
+    print("Mean: ", np.mean(results_100th))
+    print("Std: ", np.std(results_100th)) 
+    # optional, print normalized 80th percentile or 50th percentile scores
     
 if __name__ == "__main__":
     main()
