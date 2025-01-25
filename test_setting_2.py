@@ -96,33 +96,35 @@ def main():
     if task.is_discrete: 
         task.map_to_logits()
     
-    results_100th, results_80th, results_50th = [], [], [] 
-    for seed in seed_list:
-        
-        nconfig.args.train = True 
-        nconfig.args.seed = seed 
-        nconfig.model.model_load_path = f"results/tune_1_setting_2_200/AntMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25/seed0/BrownianBridge/checkpoint/top_model_epoch_100.pth"
-        nconfig.model.optim_sche_load_path = f"results/tune_1_setting_2_200/AntMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25/seed0/BrownianBridge/checkpoint/top_optim_sche_epoch_100.pth"
+    for t_of_high in [200,500,800]:
+        results_100th, results_80th, results_50th = [], [], [] 
+        for seed in seed_list:
+            
+            nconfig.args.train = True 
+            nconfig.args.seed = seed 
+            nconfig.model.model_load_path = f"results/tune_1_setting_2_{t_of_high}/AntMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25/seed0/BrownianBridge/checkpoint/top_model_epoch_100.pth"
+            nconfig.model.optim_sche_load_path = f"results/tune_1_setting_2_{t_of_high}/AntMorphology-Exact-v0/sampling_lr0.001/initial_lengthscale1.0/delta0.25/seed0/BrownianBridge/checkpoint/top_optim_sche_epoch_100.pth"
 
-        
-        nconfig.args.train = False 
-        result = tester(nconfig,task)
-        
-        results_100th.append(result[0])
-        results_80th.append(result[1])
-        results_50th.append(result[2]) 
-        
-    results_100th, results_80th, results_50th = np.array(results_100th), np.array(results_80th), np.array(results_50th)
-    print("Normalized 100th percentile score: ")
-    print("Mean: ", np.mean(results_100th))
-    print("Std: ", np.std(results_100th)) 
-    print("Normalized 80th percentile score: ")
-    print("Mean: ", np.mean(results_80th))
-    print("Std: ", np.std(results_80th))
-    print("Normalized 50th percentile score: ")
-    print("Mean: ", np.mean(results_50th))
-    print("Std: ", np.std(results_50th))
-    # optional, print normalized 80th percentile or 50th percentile scores
+            
+            nconfig.args.train = False 
+            result = tester(nconfig,task)
+            
+            results_100th.append(result[0])
+            results_80th.append(result[1])
+            results_50th.append(result[2]) 
+            
+        results_100th, results_80th, results_50th = np.array(results_100th), np.array(results_80th), np.array(results_50th)
+        print(f"t of high{t_of_high}")
+        print("Normalized 100th percentile score: ")
+        print("Mean: ", np.mean(results_100th))
+        print("Std: ", np.std(results_100th)) 
+        print("Normalized 80th percentile score: ")
+        print("Mean: ", np.mean(results_80th))
+        print("Std: ", np.std(results_80th))
+        print("Normalized 50th percentile score: ")
+        print("Mean: ", np.mean(results_50th))
+        print("Std: ", np.std(results_50th))
+        # optional, print normalized 80th percentile or 50th percentile scores
     
 if __name__ == "__main__":
     main()
