@@ -151,10 +151,14 @@ class BBDMRunner(DiffusionBaseRunner):
         # self.logger(self.net.cond_latent_mean)
         # self.logger(self.net.cond_latent_std)
 
-    def predict_x_high(self,x_t,t, x_low, T=1000): 
+    def predict_x_high(self, x_t, t, x_low, T=1000): 
         noise = torch.randn_like(x_t)
-        m_t = t/T 
-        var_t = 2*(m_t - m_t*m_t)
+        # m_t = t/T 
+        # var_t = 2*(m_t - m_t*m_t)
+        m_t = torch.tensor(t/T, device=x_low.device, dtype=x_low.dtype)
+        var_t = torch.tensor(2*(m_t - m_t*m_t), device=x_low.device, dtype=x_low.dtype)
+        # m_t = extract(m_t, t, x_t.shape)
+        # var_t = extract(var_t, t, x_t.shape)
         sigma_t = torch.sqrt(var_t)
         x_high= (x_t - m_t * x_low - sigma_t * noise) / (1. - m_t)
         return x_high 
