@@ -5,7 +5,7 @@ from Register import Registers
 from model.BrownianBridge.BrownianBridgeModel import BrownianBridgeModel
 # from model.BrownianBridge.LatentBrownianBridgeModel import LatentBrownianBridgeModel
 from runners.DiffusionBasedModelRunners.DiffusionBaseRunner import DiffusionBaseRunner
-from runners.utils import weights_init, get_optimizer
+from runners.utils import weights_init, get_optimizer, extract, exists, default
 from tqdm.autonotebook import tqdm
 
 
@@ -151,8 +151,22 @@ class BBDMRunner(DiffusionBaseRunner):
         # self.logger(self.net.cond_latent_mean)
         # self.logger(self.net.cond_latent_std)
 
+    def predict_x_high(x_t,t, x_low, T=1000): 
+        noise = default(noise, lambda: torch.randn_like(x_t))
+        m_t = t/T 
+        var_t = 2*(m_t - m_t*m_t)
+        m_t = extract(m_t, t, x_t.shape)
+        var_t = extract(var_t, t, x_t.shape)
+        sigma_t = torch.sqrt(var_t)
+        x_high= (x_t - m_t * x_low - sigma_t * noise) / (1. - m_t)
+        return x_high 
+        
+
     def loss_fn(self, net, batch, epoch, step, opt_idx=0, stage='train', write=True):
-        (x_high, y_high), (x_low, y_low) = batch
+       
+        (x_t, y_high), (x_low, y_low) = batch
+
+        x_high =  self.predict_x_high(x_t,self.config.t_of_high, x_low)
         
         torch.manual_seed(step)
         rand_mask = torch.rand(y_high.size())

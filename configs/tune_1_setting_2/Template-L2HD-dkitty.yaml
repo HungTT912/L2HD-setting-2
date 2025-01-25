@@ -1,7 +1,7 @@
 # Brownian Bridge Diffusion Model Template(Pixel Space)
 runner: "BBDMRunner"
-tune : "tune_1_setting_2"
-wandb_name: "tune_1_ant"
+tune : "final"
+wandb_name: "final-dkitty"
 training:
   n_epochs: 100
   save_interval: 20
@@ -16,16 +16,16 @@ training:
 testing:
   clip_denoised: False
   # sample_num: 5
-  percentile_sampling: 0.1
-  type_sampling : 'highest'
+  percentile_sampling: 0.2
+  type_sampling: 'highest'
   num_candidates: 128
   alpha: 0.8
   classifier_free_guidance_weight: -1.5
-  save_npy: True 
+  save_npy: True
 
 
 task: 
-  name: 'AntMorphology-Exact-v0'
+  name: 'DKittyMorphology-Exact-v0'
   normalize_y: True
   normalize_x: True
 
@@ -40,10 +40,8 @@ GP:
   delta_lengthscale: 0.25
   delta_variance: 0.25
   threshold_diff: 0.001
-  num_fit_samples: 10004
+  num_fit_samples: 10000
   type_of_initial_points: highest
-
-t_of_high : 200 
 
 model:
   model_name: "BrownianBridge" # part of result path
@@ -51,7 +49,9 @@ model:
   latent_before_quant_conv: False
   normalize_latent: False
   only_load_latent_mean_std: False
- 
+  #model_load_path: "results/AntMorphology-Exact-v0/BrownianBridge/2024-08-26T16-48-38/checkpoint/top_model_epoch_100.pth" # model checkpoint path
+  #optim_sche_load_path: "results/AntMorphology-Exact-v0/BrownianBridge/2024-08-26T16-48-38/checkpoint/top_optim_sche_epoch_100.pth" # optimizer scheduler checkpoint path
+
   EMA:
     use_ema: True
     ema_decay: 0.995
@@ -91,7 +91,7 @@ model:
       max_var: 1.0 # maximum variance
 
       MLPParams:
-        image_size: 60
+        image_size: 56
         hidden_size: 1024
         condition_key: "SpatialRescaler" # options {"SpatialRescaler", "first_stage", "nocond"}
 

@@ -151,11 +151,10 @@ class BrownianBridgeModel(nn.Module):
         m_t = extract(self.m_t, t, x_high.shape)
         var_t = extract(self.variance_t, t, x_high.shape)
         sigma_t = torch.sqrt(var_t)
-        #new setting 
-        x0 = (x_high - m_t*x_low - sigma_t*noise)/(1-m_t) 
+        x_t = (1-m_t)*x_high + m_t*x_low + sigma_t*noise 
 
         if self.objective == 'grad':
-            objective = m_t * (x_low - x0) + sigma_t * noise
+            objective = m_t * (x_low - x_high) + sigma_t * noise
         elif self.objective == 'noise':
             objective = noise
         elif self.objective == 'ysubx':
@@ -164,7 +163,7 @@ class BrownianBridgeModel(nn.Module):
             raise NotImplementedError()
 
         return (
-            x0,
+            x_t,
             objective
         )
 

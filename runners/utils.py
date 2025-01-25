@@ -5,6 +5,9 @@ from datetime import datetime
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import design_bench
+from inspect import isfunction
+
+
 # from design_bench.datasets.continuous.ant_morphology_dataset import AntMorphologyDataset
 # from design_bench.datasets.continuous.dkitty_morphology_dataset import DKittyMorphologyDataset
 # from design_bench.datasets.discrete.tf_bind_10_dataset import TFBind10Dataset
@@ -299,3 +302,19 @@ def testing_by_oracle(task_name, high_candidates):
     score = task.predict(high_candidates)
     return score
 ### Testing 128 found designs by the oracle
+
+
+def extract(a, t, x_shape):
+    b, *_ = t.shape
+    out = a.gather(-1, t)
+    return out.reshape(b, *((1,) * (len(x_shape) - 1)))
+
+
+def exists(x):
+    return x is not None
+
+
+def default(val, d):
+    if exists(val):
+        return val
+    return d() if isfunction(d) else d
