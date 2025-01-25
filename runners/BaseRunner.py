@@ -597,18 +597,18 @@ class BaseRunner(ABC):
         denormalize_high_candidates = high_candidates * self.std_offline_x + self.mean_offline_x
 
         if task.is_discrete: 
-            # task.map_to_logits() 
+            task.map_to_logits() 
             denormalize_high_candidates = denormalize_high_candidates.reshape(denormalize_high_candidates.shape[0],task.x.shape[1],task.x.shape[2])
         
-        # high_true_scores = task.predict(denormalize_high_candidates.numpy())
+        high_true_scores = task.predict(denormalize_high_candidates.numpy())
         # import pdb ; pdb.set_trace()
-        # final_score = (torch.from_numpy(high_true_scores) - oracle_y_min)/(oracle_y_max - oracle_y_min)    
+        final_score = (torch.from_numpy(high_true_scores) - oracle_y_min)/(oracle_y_max - oracle_y_min)    
         # np.save(os.path.join("/mnt/disk2/cuongdm/BBDM/results/ant/BrownianBridge/2024-08-21T16-36-17/samples",
         #                     f"random_solution.npy"), low_candidates.cpu().numpy())
         # np.save(os.path.join("/mnt/disk2/cuongdm/BBDM/results/ant/BrownianBridge/2024-08-21T16-36-17/samples",
         #                     f"random_solution.npy"), high_candidates.cpu().numpy())
         # if hasattr(self.config.testing,'save_npy') and self.config.testing.save_npy == True: 
         #     np.save(f'{self.config.task.name}_full_distribution_final_results_{self.config.args.seed}.npy',final_score.cpu().numpy())
-        # percentiles = torch.quantile(final_score, torch.tensor([1.0, 0.8, 0.5]), interpolation='higher') 
-        # return percentiles[0].item(), percentiles[1].item(), percentiles[2].item()
-        return denormalize_high_candidates
+        percentiles = torch.quantile(final_score, torch.tensor([1.0, 0.8, 0.5]), interpolation='higher') 
+        return percentiles[0].item(), percentiles[1].item(), percentiles[2].item()
+        #return denormalize_high_candidates
